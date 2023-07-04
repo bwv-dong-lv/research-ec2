@@ -42,3 +42,29 @@ $('#login-email').keyup(function() {
 $('#login-password').keyup(function() {
   $('#flash-message').addClass('d-none');
 });
+
+// const form = document.querySelector('#login-form');
+// const submitBtn = $('#submit-login');
+
+// form.addEventListener('submit', event => {
+//   event.preventDefault(); // Prevents the default form submission behavior
+
+//   submitBtn.disabled = true;
+// });
+
+// $('#login-form').addEventListener('submit', event => {
+//   event.preventDefault(); // Prevents the default form submission behavior
+
+//   $('#submit-login').disabled = true;
+// });
+
+// Disable the submit button initially
+document.getElementById('submit-login').disabled = true;
+
+window.addEventListener('load', function() {
+  document.getElementById('submit-login').disabled = false;
+});
+
+document.getElementById('login-form').addEventListener('submit', function() {
+  document.getElementById('submit-login').disabled = true;
+});
