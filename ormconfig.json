@@ -8,7 +8,7 @@
   "synchronize": false,
   "logging": false,
   "entities": [
-    "__dirname + '/../**/*.entity.js'"
+    "dist/entities/*.entity.js"
   ],
   "migrations": [
     "dist/migrations/*.js"
