@@ -66,5 +66,7 @@ window.addEventListener('load', function() {
 });
 
 document.getElementById('login-form').addEventListener('submit', function() {
-  document.getElementById('submit-login').disabled = true;
+  if ($('#login-form').valid()) {
+    document.getElementById('submit-login').disabled = true;
+  }
 });
