@@ -1,4 +1,6 @@
-<div class="alert alert-danger alert-dismissible">
-  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  <%- message.content %>
+<% if(flashMessage){ %>
+<div id="flash-message" class="alert alert-danger alert-dismissible">
+  <button style="padding: 0.45rem 0.45rem;" id="close-flash-message" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <%- flashMessage %>
 </div>
+<% } %>

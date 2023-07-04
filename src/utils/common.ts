@@ -98,3 +98,27 @@ export function getCurrentSystemDatetime() {
     .tz('Asia/Tokyo')
     .format('YYYY/MM/DD HH:mm:ss');
 }
+
+export const getEnumKeyByEnumValue = (
+  myEnum: any,
+  enumValue: number | string,
+) => {
+  const keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue);
+  return keys.length > 0 ? keys[0] : '';
+};
+
+export const numberWithCommas = (x: number) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+export const isNumeric = (value: string) => {
+  return /^\d+$/.test(value);
+};
+
+export const equalsCheckArray = (a: string[], b: string[]) => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
+export const fileExtract = (filename: string | undefined) => {
+  return filename && filename.split('.').pop();
+};

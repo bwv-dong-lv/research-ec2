@@ -1,17 +1,21 @@
-<link rel="stylesheet" href="/asset/css/pages/account/login.css">
+<link rel="stylesheet" href="/public/asset/css/pages/account/login.css">
+
 <div class="login-form">
-  <form method="post" id="loginFrm">
+  <form id="login-form" action="/login" method="post" name="login-form">
     <div class="form-group">
-      <label class="m-bottom-10">ユーザー名</label>
-      <input type="text" class="form-control p-left-10" name="username" value=<%= username%>>
+      <label class="m-bottom-10">Email</label>
+      <input id="login-email" type="text" class="form-control p-left-10" name="email" value=<%= form.email%>>
     </div>
+
     <div class="form-group">
-      <label class="m-bottom-10">パスワード</label>
-      <input type="password" class="form-control p-left-10" name="password">
+      <label class="m-bottom-10">Password</label>
+      <input id="login-password" type="password" class="form-control p-left-10" name="password" value="<%= form.password  %>">
     </div>
-    <p id="errorMessage" class="error-message m-bottom-10"><%- message %></p>
+
+    <%- include('../common/message_error') %>
+
     <div class="form-group text-center m-bottom-20">
-      <button type="submit">ログイン</button>
+      <button style="" type="submit">Login</button>
     </div>
   </form>
 </div>

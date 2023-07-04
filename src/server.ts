@@ -9,6 +9,14 @@ import errorHandler from './middlewares/errorHandler';
 import router from './routes';
 import * as moment from 'moment-timezone';
 import './connection';
+import {User} from './entities/user.entity';
+
+declare module 'express-session' {
+  interface SessionData {
+    user: User;
+    flashMessage: string;
+  }
+}
 
 moment.tz.setDefault('Asia/Tokyo');
 
@@ -19,7 +27,7 @@ app.set('view engine', 'ejs');
 app.use(expressEjsLayouts);
 app.set('layout extractScripts', true);
 
-app.set('layout', 'layout/defaultLayout');
+// app.set('layout', 'layout/defaultLayout');
 
 app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use(bodyParser.json({limit: '50mb'}));
@@ -40,10 +48,12 @@ app.use(
 
 app.use(cookieParser());
 
-app.use(express.static(`${__dirname}/../public`));
+app.use(express.static(`${__dirname}/../`));
 
 app.use(router);
+
 app.use(errorHandler);
+
 app.set('trust proxy', true);
 
 export = app;
