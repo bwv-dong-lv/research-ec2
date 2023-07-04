@@ -1,25 +1,30 @@
-<% if (loginUser.name) { %>
+<% if (username) { %>
 <i class="btn-toggle-hamburger-menu pe-7s-menu pe-2x d-block d-lg-none"></i>
 <div class="overlay"></div>
 <div class="left-menu order-2 order-lg-0">
   <i class="btn-toggle-sidenav pe-7s-angle-left d-none d-lg-block"></i>
   <div class="left-menu-item text-center d-block d-lg-none my-2">
     <div>
-      <img src="/asset/images/avatar-default.png" width="60px" height="60px">
+      <img src="/public/asset/images/avatar-default.png" width="60px" height="60px">
     </div>
     <div class="text-header header-username w-100">
-      <%= loginUser.name%>
+      <%= username%>
     </div>
   </div>
-  <div class="left-menu-item left-menu-item-first">
-    <a href="/">
-      <i class="pe-7s-box2"></i>
-      <span class="left-menu-item-label">TOP</span>
-      </label>
+  <div style="height: 100vh;" class="left-menu-item left-menu-item-first">
+    <a style="text-decoration: underline;" class="" href="/user">
+      User List
+      <!-- <span class="left-menu-item-label ">User List</span> -->
+    </a>
+
+    <a style="text-decoration: underline;" class="" href="/group">
+      <span class="">Group List</span>
+      <!-- <span class="left-menu-item-label ">Group List</span> -->
+    </a>
   </div>
- 
+
   <div class="left-menu-item display-none" id="logout-menu-item">
-    <a href="/logout?redirect=<%= logoutRedirect %>" >
+    <a href="/logout?">
       <i class="fa fa-sign-out"></i>
       <span class="left-menu-item-label">ログアウト</span>
     </a>

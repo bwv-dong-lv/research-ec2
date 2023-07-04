@@ -1,99 +1,81 @@
-// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-empty-function */
 /**
- * Login controller
+ * User controller
  */
-import * as logger from '../utils/logger';
-import {Request, Response} from 'express';
-import {messages} from '../constants';
+import {Request, Response, NextFunction} from 'express';
+
+import {User} from '../entities/user.entity';
+import _ from 'lodash';
+
+import moment from 'moment';
 import {getCustomRepository} from 'typeorm';
 import {UserRepository} from '../repositories/user.repository';
+
+import {messages} from '../constants';
+import {comparePassword, hashPassword} from '../utils/bcrypt';
 
 /**
  * GET login
  */
-export const login = (req: Request, res: Response) => {
+export const renderLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   res.render('login/index', {
     layout: 'layout/loginLayout',
-    message: '',
-    username: '',
+    form: {
+      email: '',
+      password: '',
+    },
+    flashMessage: '',
   });
 };
 
 /**
  * POST login
  */
-export const auth = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    // get a User repository to perform operations with User
     const userRepository = getCustomRepository(UserRepository);
+    const {email, password} = req.body;
 
-    // load a post by a given post id
-    const user = await userRepository.verifyCredentials(
-      req.body.username,
-      req.body.password,
-    );
+    const user = await userRepository.getUserByEmail(req.body.email);
 
-    if (!user) {
-      // write log
-      logger.logInfo(
-        req,
-        `Failed login attempt: name(${req.body.username || ''})`,
-      );
-
+    if (user && (await comparePassword(req.body.password, user.password))) {
+      req.session.user = user;
+      res.redirect('/user');
+    } else {
       res.render('login/index', {
         layout: 'layout/loginLayout',
-        username: req.body.username,
-        message: 'Message',
+        form: {
+          email: email,
+          password: password,
+        },
+        flashMessage: messages.EBT016(),
       });
     }
-
-    // save user info into session
-    (req.session as Express.Session).user = {
-      ...user,
-    };
-
-    // write log
-    logger.logInfo(req, `User id(${user!.id}) logged in successfully.`);
-
-    // If [ログイン] clicked, then redirect to TOP page
-    if (
-      req.query.redirect !== undefined &&
-      req.query.redirect.length! > 0 &&
-      req.query.redirect !== '/'
-    ) {
-      res.redirect(decodeURIComponent(req.query.redirect!.toString()));
-    } else {
-      res.redirect('/');
-    }
   } catch (err) {
-    // write log
-    logger.logInfo(
-      req,
-      `Failed login attempt: name(${req.body.username || ''})`,
-    );
-
-    res.render('login/index', {
-      layout: 'layout/loginLayout',
-      username: req.body.username,
-      message: 'Test',
-    });
+    next(err);
   }
 };
 
-/**
- * GET logout
- */
-export const logout = async (req: Request, res: Response) => {
-  req.user.destroy();
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  req.session.destroy(function(err) {});
 
-  // write log
-  logger.logInfo(req, 'User logged out successfully.');
-
-  let redirectURL = '/login';
-  if (req.query.redirect !== undefined) {
-    redirectURL += `?redirect=${encodeURIComponent(
-      req.query.redirect!.toString(),
-    )}`;
-  }
+  const redirectURL = '/login';
+  // if (req.query.redirect !== undefined) {
+  //   redirectURL += `?redirect=${encodeURIComponent(
+  //     req.query.redirect!.toString(),
+  //   )}`;
+  // }
   res.redirect(redirectURL);
 };

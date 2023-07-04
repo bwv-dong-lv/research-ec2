@@ -29,60 +29,83 @@ export const commonErrorProcess = (err: any, req: Request, res: Response) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default (err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err && (!err.code || err.code !== 'ERR_HTTP_HEADERS_SENT')) {
-    logger.logError(req, err);
+// export default (err: any, req: Request, res: Response, next: NextFunction) => {
+//   if (err && (!err.code || err.code !== 'ERR_HTTP_HEADERS_SENT')) {
+//     logger.logError(req, err);
+//   }
+
+//   let title = titleMessageError.INTERNAL_SERVER_ERROR;
+//   let error = messages.INTERNAL_SERVER_ERROR;
+//   let status = BAD_REQUEST;
+//   if (err.response !== undefined) {
+//     status = err.response.status;
+
+//     if (status === NOT_FOUND) {
+//       res.render('errors/index', {
+//         title: titleMessageError.NOT_FOUND,
+//         content: messages.NOT_FOUND,
+//       });
+//       return;
+//     }
+
+//     if (status === INTERNAL_SERVER_ERROR) {
+//       res.render('errors/index', {
+//         title: titleMessageError.INTERNAL_SERVER_ERROR,
+//         content: messages.INTERNAL_SERVER_ERROR,
+//       });
+//       return;
+//     }
+
+//     if (status === FORBIDDEN) {
+//       res.render('errors/index', {
+//         title: titleMessageError.FORBIDDEN,
+//         content: messages.FORBIDDEN,
+//       });
+//       return;
+//     }
+
+//     if (status === UNAUTHORIZED) {
+//       res.redirect(`/logout?redirect=${encodeURIComponent(req.originalUrl)}`);
+//       return;
+//     }
+//     status = err.response.status;
+//     error += `data: ${JSON.stringify(err.response.data)}`;
+//     title = messages.BAD_REQUEST;
+//   }
+
+//   const userSession = req.session === undefined ? undefined : req.session.user;
+
+//   res.status(status).render('errors/index', {
+//     title,
+//     content: error,
+//     layout:
+//       userSession === undefined
+//         ? 'layout/noLoginLayout'
+//         : 'layout/defaultLayout',
+//   });
+
+//   next();
+// };
+
+export default (req: Request, res: Response, next: NextFunction) => {
+  res.status(404);
+
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('errors/index', {
+      layout: 'layout/notFoundLayout',
+      title: '404 Page Not Found',
+      content: '',
+    });
+    return;
   }
 
-  let title = titleMessageError.INTERNAL_SERVER_ERROR;
-  let error = messages.INTERNAL_SERVER_ERROR;
-  let status = BAD_REQUEST;
-  if (err.response !== undefined) {
-    status = err.response.status;
-
-    if (status === NOT_FOUND) {
-      res.render('errors/index', {
-        title: titleMessageError.NOT_FOUND,
-        content: messages.NOT_FOUND,
-      });
-      return;
-    }
-
-    if (status === INTERNAL_SERVER_ERROR) {
-      res.render('errors/index', {
-        title: titleMessageError.INTERNAL_SERVER_ERROR,
-        content: messages.INTERNAL_SERVER_ERROR,
-      });
-      return;
-    }
-
-    if (status === FORBIDDEN) {
-      res.render('errors/index', {
-        title: titleMessageError.FORBIDDEN,
-        content: messages.FORBIDDEN,
-      });
-      return;
-    }
-
-    if (status === UNAUTHORIZED) {
-      res.redirect(`/logout?redirect=${encodeURIComponent(req.originalUrl)}`);
-      return;
-    }
-    status = err.response.status;
-    error += `data: ${JSON.stringify(err.response.data)}`;
-    title = messages.BAD_REQUEST;
+  // respond with json
+  if (req.accepts('json')) {
+    res.json({error: 'Not found'});
+    return;
   }
 
-  const userSession = req.session === undefined ? undefined : req.session.user;
-
-  res.status(status).render('errors/index', {
-    title,
-    content: error,
-    layout:
-      userSession === undefined
-        ? 'layout/noLoginLayout'
-        : 'layout/defaultLayout',
-  });
-
-  next();
+  // default to plain-text. send()
+  res.type('txt').send('Not found');
 };

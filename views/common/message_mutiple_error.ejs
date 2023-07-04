@@ -1,6 +1,6 @@
 <% if(flashMessage){ %>
-<div id="flash-message" class="alert alert-info alert-dismissible">
+<div style="white-space: pre-line;" id="flash-message" class="alert alert-danger alert-dismissible">
   <button style="padding: 0.45rem 0.45rem;" id="close-flash-message" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  <i class="icon fa fa-info"></i> <%- flashMessage %>
+  <%- flashMessage %>
 </div>
 <% } %>
