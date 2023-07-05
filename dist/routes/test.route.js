@@ -27,13 +27,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * User Router
  */
 const express_1 = require("express");
-const userController = __importStar(require("../controllers/user.controller"));
-const noCache_1 = require("../middlewares/noCache");
-const checkAuth_1 = require("../middlewares/checkAuth");
-const userRouter = (0, express_1.Router)();
-userRouter.get('/user', [checkAuth_1.checkUser, noCache_1.noCache], userController.renderUserList);
-userRouter.post('/user', [checkAuth_1.checkUser, noCache_1.noCache], userController.searchUser);
-userRouter.get('/user/export-csv', [checkAuth_1.checkUser], userController.exportCSV);
-userRouter.get('/user/:userId', [checkAuth_1.checkUser, noCache_1.noCache], userController.renderUserAddEditDelete);
-exports.default = userRouter;
-//# sourceMappingURL=user.route.js.map
+const testController = __importStar(require("../controllers/test.controller"));
+const testRouter = (0, express_1.Router)();
+testRouter.get('/test', testController.test);
+exports.default = testRouter;
+//# sourceMappingURL=test.route.js.map

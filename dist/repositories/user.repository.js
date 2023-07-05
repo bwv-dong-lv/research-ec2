@@ -13,64 +13,15 @@ const user_entity_1 = require("../entities/user.entity");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
     constructor() {
         super(...arguments);
+        // CRUD
         this.createUser = async (user) => {
             return await this.save(user);
-        };
-        this.getUserByEmail = async (userEmail) => {
-            return await this.findOne({ email: userEmail });
-        };
-        this.getUserById = async (userId) => {
-            return await this.findOne({ id: userId });
         };
         this.updateUser = async (userId, user) => {
             const property = await this.findOne({
                 where: { id: userId },
             });
             return this.save(Object.assign(Object.assign({}, property), user));
-        };
-        this.getAllUsers = async (email, name, user_flg, phone) => {
-            const isMultiUserType = Array.isArray(user_flg);
-            const whereClause = {
-                name: (0, typeorm_1.Like)(`%${name ? name : ''}%`),
-                user_flg: isMultiUserType ? (0, typeorm_1.In)(user_flg) : user_flg,
-                del_flg: 0,
-            };
-            if (email) {
-                whereClause.email = email;
-            }
-            if (phone) {
-                whereClause.phone = phone;
-            }
-            const [result, total] = await this.findAndCount({
-                where: whereClause,
-            });
-            return {
-                data: result,
-                count: total,
-            };
-        };
-        this.findUsers = async (email, name, user_flg, date_of_birth, phone, page) => {
-            const isMultiUserType = Array.isArray(user_flg);
-            const whereClause = {
-                name: (0, typeorm_1.Like)(`%${name ? name : ''}%`),
-                user_flg: isMultiUserType ? (0, typeorm_1.In)(user_flg) : user_flg,
-                del_flg: 0,
-            };
-            if (email) {
-                whereClause.email = email;
-            }
-            if (phone) {
-                whereClause.phone = phone;
-            }
-            const [result, total] = await this.findAndCount({
-                where: whereClause,
-                take: 10,
-                skip: page ? (page - 1) * 10 : 0,
-            });
-            return {
-                data: result,
-                count: total,
-            };
         };
         // deleteUserById = async (userId: number, adminId: number, date: Date) => {
         //   return await this.update(userId, {
@@ -79,6 +30,76 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         //     deleted_at: date,
         //   });
         // };
+        this.getUserByEmail = async (userEmail) => {
+            return await this.findOne({ email: userEmail });
+        };
+        this.getUserById = async (userId) => {
+            return await this.findOne({ id: userId });
+        };
+        this.getAllUsers = async (username, fromDate, toDate) => {
+            const whereClause = {
+                name: (0, typeorm_1.Like)(`%${username ? username : ''}%`),
+                deleted_date: (0, typeorm_1.IsNull)(),
+            };
+            if (fromDate && toDate) {
+                whereClause.started_date = (0, typeorm_1.Between)(fromDate, toDate);
+            }
+            else {
+                if (fromDate) {
+                    whereClause.started_date = (0, typeorm_1.MoreThan)(fromDate);
+                }
+                else if (toDate) {
+                    whereClause.started_date = (0, typeorm_1.LessThan)(toDate);
+                }
+                else {
+                }
+            }
+            const [result, total] = await this.findAndCount({
+                where: whereClause,
+                order: {
+                    name: 'ASC',
+                    started_date: 'ASC',
+                    id: 'ASC',
+                },
+            });
+            return {
+                data: result,
+                count: total,
+            };
+        };
+        this.findUsers = async (username, fromDate, toDate, page) => {
+            const whereClause = {
+                name: (0, typeorm_1.Like)(`%${username ? username : ''}%`),
+                deleted_date: (0, typeorm_1.IsNull)(),
+            };
+            if (fromDate && toDate) {
+                whereClause.started_date = (0, typeorm_1.Between)(fromDate, toDate);
+            }
+            else {
+                if (fromDate) {
+                    whereClause.started_date = (0, typeorm_1.MoreThan)(fromDate);
+                }
+                else if (toDate) {
+                    whereClause.started_date = (0, typeorm_1.LessThan)(toDate);
+                }
+                else {
+                }
+            }
+            const [result, total] = await this.findAndCount({
+                where: whereClause,
+                order: {
+                    name: 'ASC',
+                    started_date: 'ASC',
+                    id: 'ASC',
+                },
+                take: 10,
+                skip: page ? (page - 1) * 10 : 0,
+            });
+            return {
+                data: result,
+                count: total,
+            };
+        };
         this.isEmailInvalid = async (email) => {
             const user = await this.getUserByEmail(email);
             return user ? true : false;

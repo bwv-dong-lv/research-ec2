@@ -14,6 +14,7 @@ import {User} from './entities/user.entity';
 declare module 'express-session' {
   interface SessionData {
     user: User;
+    userListCSV: any;
     flashMessage: string;
   }
 }

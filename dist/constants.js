@@ -48,6 +48,7 @@ exports.messages = {
     EBT010: (fieldName) => `${fieldName}は数字を正しく入力してください。`,
     EBT011: (fieldName) => `${fieldName}は電話番号を正しく入力してください。`,
     EBT016: () => 'メールアドレスまたは会員IDが間違っています。',
+    EBT044: () => '解約予定日は契約終了日前を指定してください。',
     IBT012: () => '検索結果は0件です。',
     IBT013: (id) => `${id}します。よろしいですか？`,
     E006: (fileSize) => `The file size limit ${fileSize} has been exceeded.`,

@@ -6,18 +6,26 @@
         <!-- <h3 class="ml-5">Intern Training</h3> -->
 
         <div class="ml-15px text-header header-username">
-          <% if(username) { %>
-          <ul class="navbar-nav">
+          <% if(usernameHeader) { %>
+          <!-- <ul class="navbar-nav">
             <li class="dropdown cursor-pointer">
               <a style="padding: 7px;" id="navbarDropdownUser" class="d-inline-block mr-2" data-toggle="dropdown">
-                <%= username %>
+                <%= usernameHeader %>
               </a>
             </li>
 
             <li class="dropdown cursor-pointer">
               <a href="/logout" type="button" class="button btn-logout" style="color: #BF474D;">Logout</a>
             </li>
-          </ul>
+          </ul> -->
+
+          <div>
+            <a style="padding: 7px;" id="navbarDropdownUser" class="d-inline-block mr-2" data-toggle="dropdown">
+              <%= usernameHeader %>
+            </a>
+
+            <a href="/logout" type="button" class="button btn-logout" style="color: #BF474D;">Logout</a>
+          </div>
 
           <% } else { %>
           <a href="/login" style="color: #01a2e7; line-height: 40px; text-decoration: none;">ログイン</a>
