@@ -1,1 +1,154 @@
-<h1>User List</h1>
+<div>
+  <div class="">
+    <% if (flashMessage) { %>
+    <div id="flash-message" style="height: 5rem;" class="w-100 <%= flashMessage.includes('success') ? "bg-success" : "bg-danger"  %> mb-3 rounded text-white d-flex flex-column">
+      <div id="close-flash-message" style="cursor: pointer" class="d-flex justify-content-end">
+        <span style="width: 1.5rem; height: 1.5rem; font-size: 1.5rem">&times;</span>
+      </div>
+
+      <div class="d-flex justify-content-center"><%= flashMessage  %></div>
+    </div>
+    <% } %>
+
+    <form id="user-list-search-form" action="/user" method="POST" name="user-list-search-form">
+      <div class="d-flex justify-content-start mt-4">
+        <div class="d-flex flex-column justify-content-between">
+          <div style="width: 18.5rem;" class="d-flex justify-content-between">
+            <label for="username">User Name</label>
+
+            <div style="height: 3.6rem;" class="d-flex flex-column">
+              <input style="width: 10rem;" id="user-list-username" type="text" name="username" value="<%= username  %>">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center mr-5">
+              <label for="fromDate">Started Date From</label>
+              <!-- <input style="width: 10rem;" id="user-list-from-date" type="date" name="fromDate" value="<%= fromDate  %>"> -->
+              <input style="width: 10rem;" id="user-list-from-date" name="fromDate" type="text" value="<%= fromDate  %>">
+            </div>
+
+            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center">
+              <label for="toDate">Started Date To</label>
+              <input style="width: 10rem;" id="user-list-to-date" name="toDate" type="text" value="<%= toDate  %>">
+              <!-- <input style="width: 10rem;" id="user-list-to-date" type="date" name="toDate" value="<%= toDate  %>"> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width: 35%;" class="mt-5">
+        <div class="d-flex justify-content-end mt-3">
+          <button style="width: 6rem;" class="bg-white rounded" onClick="window.location.href='/user';" type="reset">Clear</button>
+          <button style="width: 6rem;" class="bg-white rounded ml-3" type="submit">Search</button>
+        </div>
+      </div>
+
+
+  </div>
+
+  <div class="">
+    <div class="d-flex justify-content-between">
+      <input style="display: none;" id="save-page" name="page" value="<%= currentPage  %>" type="text" />
+      <input style="display: none;" id="save-last-page" name="lastPage" value="<%= lastPage  %>" type="text" />
+
+      <% if(totalRow == 0){ %>
+      <p>No User Found.</p>
+      <% } %>
+
+      <% if(totalRow > 10){ %>
+      <div style="width: 40%;" class="mt-4">
+        <div class="d-flex justify-content-end">
+          <button id="first-page" class="bg-light" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">最初</button>
+          <button id="prev-page" class="bg-light" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">前へ</button>
+
+          <% if(prev3dots){ %>
+          <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
+          <% } %>
+
+          <% pageArray.forEach(function(item) { %>
+          <input class="page-btn <%= item != currentPage ? "border" : "border-primary text-dark"  %>" <%= item == currentPage && "disabled"  %> onclick="pageClick(this)" value="<%= item %>" type="submit" />
+          <% }); %>
+
+          <% if(next3dots){ %>
+          <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
+          <% } %>
+
+          <button id="next-page" class="bg-light" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">次へ</button>
+          <button id="last-page" class="bg-light" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">最終</button>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+
+    </form>
+
+    <div class="w-100 mt-4">
+      <% if(totalRow > 0){ %>
+      <table style="table-layout: fixed; width: 50rem;" class="table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">User Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Group Name</th>
+            <th scope="col">Started Date</th>
+            <th scope="col">Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% userList.forEach(function(user) { %>
+          <tr>
+            <td><% if(loginUser.position_id == 0){ %>
+              <a style="text-decoration: underline;" href="/user/<%= user.id %>"><%= user.name %></a>
+              <% } %>
+              <% if(loginUser.position_id != 0){ %>
+              <%= user.name %>
+              <% } %>
+            </td>
+            <td style="text-decoration: underline;"><%= user.email %></td>
+            <td><%= user.group_name %></td>
+            <td>
+              <div style="margin-left: 30%;">
+                <%= user.started_date_display %>
+              </div>
+            </td>
+            <td>
+              <% if(user.position_id === 0){ %>
+              General Director
+              <% } %>
+
+              <% if(user.position_id === 1){ %>
+              Department Leader
+              <% } %>
+
+              <% if(user.position_id === 2){ %>
+              Team Leader
+              <% } %>
+
+              <% if(user.position_id === 3){ %>
+              Team Member
+              <% } %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <% } %>
+    </div>
+
+    <% if(loginUser.position_id == 0){ %>
+    <div class="mt-4">
+      <button style="width: 6rem;" class="bg-white rounded mr-3" onClick="window.location.href='/user/add';">Add New</button>
+
+      <% if(totalRow > 0){ %>
+      <button style="width: 6rem;" class="bg-white rounded" onclick="exportCSV()">Export CSV</button>
+      <% } %>
+    </div>
+    <% } %>
+
+  </div>
+</div>
+
+<script src="/public/asset/js/site/userList.js"></script>
+</div>

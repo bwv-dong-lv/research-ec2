@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import {EntityRepository, In, Like, Repository} from 'typeorm';
+import {
+  Between,
+  EntityRepository,
+  In,
+  IsNull,
+  LessThan,
+  Like,
+  MoreThan,
+  Repository,
+} from 'typeorm';
 import {User} from '../entities/user.entity';
+import user from '../middlewares/user';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
+  // CRUD
   createUser = async (user: Partial<User>) => {
     return await this.save(user);
-  };
-
-  getUserByEmail = async (userEmail: string) => {
-    return await this.findOne({email: userEmail});
-  };
-
-  getUserById = async (userId: number) => {
-    return await this.findOne({id: userId});
   };
 
   updateUser = async (userId: number, user: Partial<User>) => {
@@ -27,25 +30,46 @@ export class UserRepository extends Repository<User> {
     });
   };
 
-  getAllUsers = async (email: any, name: any, user_flg: any, phone: any) => {
-    const isMultiUserType = Array.isArray(user_flg);
+  // deleteUserById = async (userId: number, adminId: number, date: Date) => {
+  //   return await this.update(userId, {
+  //     del_flg: 1,
+  //     deleted_by: adminId,
+  //     deleted_at: date,
+  //   });
+  // };
 
+  getUserByEmail = async (userEmail: string) => {
+    return await this.findOne({email: userEmail});
+  };
+
+  getUserById = async (userId: number) => {
+    return await this.findOne({id: userId});
+  };
+
+  getAllUsers = async (username: string, fromDate: Date, toDate: Date) => {
     const whereClause: any = {
-      name: Like(`%${name ? name : ''}%`),
-      user_flg: isMultiUserType ? In(user_flg) : user_flg,
-      del_flg: 0,
+      name: Like(`%${username ? username : ''}%`),
+      deleted_date: IsNull(),
     };
 
-    if (email) {
-      whereClause.email = email;
-    }
-
-    if (phone) {
-      whereClause.phone = phone;
+    if (fromDate && toDate) {
+      whereClause.started_date = Between(fromDate, toDate);
+    } else {
+      if (fromDate) {
+        whereClause.started_date = MoreThan(fromDate);
+      } else if (toDate) {
+        whereClause.started_date = LessThan(toDate);
+      } else {
+      }
     }
 
     const [result, total] = await this.findAndCount({
       where: whereClause,
+      order: {
+        name: 'ASC',
+        started_date: 'ASC',
+        id: 'ASC',
+      },
     });
 
     return {
@@ -55,31 +79,34 @@ export class UserRepository extends Repository<User> {
   };
 
   findUsers = async (
-    email: any,
-    name: any,
-    user_flg: any,
-    date_of_birth: Date,
-    phone: any,
-    page: any,
+    username: string,
+    fromDate: Date | undefined | string,
+    toDate: Date | undefined | string,
+    page: number,
   ) => {
-    const isMultiUserType = Array.isArray(user_flg);
-
     const whereClause: any = {
-      name: Like(`%${name ? name : ''}%`),
-      user_flg: isMultiUserType ? In(user_flg) : user_flg,
-      del_flg: 0,
+      name: Like(`%${username ? username : ''}%`),
+      deleted_date: IsNull(),
     };
 
-    if (email) {
-      whereClause.email = email;
-    }
-
-    if (phone) {
-      whereClause.phone = phone;
+    if (fromDate && toDate) {
+      whereClause.started_date = Between(fromDate, toDate);
+    } else {
+      if (fromDate) {
+        whereClause.started_date = MoreThan(fromDate);
+      } else if (toDate) {
+        whereClause.started_date = LessThan(toDate);
+      } else {
+      }
     }
 
     const [result, total] = await this.findAndCount({
       where: whereClause,
+      order: {
+        name: 'ASC',
+        started_date: 'ASC',
+        id: 'ASC',
+      },
       take: 10,
       skip: page ? (page - 1) * 10 : 0,
     });
@@ -89,14 +116,6 @@ export class UserRepository extends Repository<User> {
       count: total,
     };
   };
-
-  // deleteUserById = async (userId: number, adminId: number, date: Date) => {
-  //   return await this.update(userId, {
-  //     del_flg: 1,
-  //     deleted_by: adminId,
-  //     deleted_at: date,
-  //   });
-  // };
 
   isEmailInvalid = async (email: string) => {
     const user = await this.getUserByEmail(email);
