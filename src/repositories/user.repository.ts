@@ -5,8 +5,10 @@ import {
   In,
   IsNull,
   LessThan,
+  LessThanOrEqual,
   Like,
   MoreThan,
+  MoreThanOrEqual,
   Repository,
 } from 'typeorm';
 import {User} from '../entities/user.entity';
@@ -54,12 +56,15 @@ export class UserRepository extends Repository<User> {
 
     if (fromDate && toDate) {
       whereClause.started_date = Between(fromDate, toDate);
+      if (fromDate == toDate) {
+        whereClause.started_date = fromDate;
+      }
     } else {
       if (fromDate) {
-        whereClause.started_date = MoreThan(fromDate);
+        whereClause.started_date = MoreThanOrEqual(fromDate);
       } else if (toDate) {
-        whereClause.started_date = LessThan(toDate);
-      } else {
+        whereClause.started_date = LessThanOrEqual(toDate);
+      } else if (fromDate == toDate) {
       }
     }
 
@@ -93,9 +98,9 @@ export class UserRepository extends Repository<User> {
       whereClause.started_date = Between(fromDate, toDate);
     } else {
       if (fromDate) {
-        whereClause.started_date = MoreThan(fromDate);
+        whereClause.started_date = MoreThanOrEqual(fromDate);
       } else if (toDate) {
-        whereClause.started_date = LessThan(toDate);
+        whereClause.started_date = LessThanOrEqual(toDate);
       } else {
       }
     }

@@ -43,15 +43,18 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             };
             if (fromDate && toDate) {
                 whereClause.started_date = (0, typeorm_1.Between)(fromDate, toDate);
+                if (fromDate == toDate) {
+                    whereClause.started_date = fromDate;
+                }
             }
             else {
                 if (fromDate) {
-                    whereClause.started_date = (0, typeorm_1.MoreThan)(fromDate);
+                    whereClause.started_date = (0, typeorm_1.MoreThanOrEqual)(fromDate);
                 }
                 else if (toDate) {
-                    whereClause.started_date = (0, typeorm_1.LessThan)(toDate);
+                    whereClause.started_date = (0, typeorm_1.LessThanOrEqual)(toDate);
                 }
-                else {
+                else if (fromDate == toDate) {
                 }
             }
             const [result, total] = await this.findAndCount({
@@ -77,10 +80,10 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             }
             else {
                 if (fromDate) {
-                    whereClause.started_date = (0, typeorm_1.MoreThan)(fromDate);
+                    whereClause.started_date = (0, typeorm_1.MoreThanOrEqual)(fromDate);
                 }
                 else if (toDate) {
-                    whereClause.started_date = (0, typeorm_1.LessThan)(toDate);
+                    whereClause.started_date = (0, typeorm_1.LessThanOrEqual)(toDate);
                 }
                 else {
                 }

@@ -7,6 +7,7 @@ exports.exportCSV = exports.renderUserAddEditDelete = exports.searchUser = expor
 const user_entity_1 = require("../entities/user.entity");
 const lodash_1 = __importDefault(require("lodash"));
 const plainjs_1 = require("@json2csv/plainjs");
+const moment_1 = __importDefault(require("moment"));
 const typeorm_1 = require("typeorm");
 const user_repository_1 = require("../repositories/user.repository");
 const constants_1 = require("../constants");
@@ -65,9 +66,29 @@ const searchUser = async (req, res, next) => {
     if (!req.session.user) {
         res.redirect('/login');
     }
-    console.log((0, dayjs_1.default)(req.body.fromDate).isBefore((0, dayjs_1.default)(req.body.toDate)));
     if (req.body.fromDate && req.body.toDate) {
-        if (!(0, dayjs_1.default)(req.body.fromDate).isBefore((0, dayjs_1.default)(req.body.toDate))) {
+        const date1 = (0, moment_1.default)(req.body.fromDate, 'DD/MM/YYYY');
+        const date2 = (0, moment_1.default)(req.body.toDate, 'DD/MM/YYYY');
+        // if (!date1.isBefore(date2)) {
+        //   res.render('userList/index', {
+        //     layout: 'layout/defaultLayout',
+        //     pageTitle: 'User List',
+        //     usernameHeader: req.session.user?.name,
+        //     username: req.body.username,
+        //     loginUser: req.session.user,
+        //     userList: [],
+        //     fromDate: req.body.fromDate,
+        //     toDate: req.body.toDate,
+        //     pageArray: [],
+        //     currentPage: 1,
+        //     lastPage: 0,
+        //     totalRow: -1,
+        //     prev3dots: false,
+        //     next3dots: false,
+        //     flashMessage: messages.EBT044(),
+        //   });
+        // }
+        if (!date2.isAfter(date1) && !date1.isSame(date2)) {
             res.render('userList/index', {
                 layout: 'layout/defaultLayout',
                 pageTitle: 'User List',
@@ -89,27 +110,51 @@ const searchUser = async (req, res, next) => {
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+    // const userListData = await userRepository.findUsers(
+    //   req.body.username,
+    //   req.body.fromDate && convertDateFormat(req.body.fromDate),
+    //   req.body.toDate && convertDateFormat(req.body.toDate),
+    //   req.body.page,
+    // );
     const userListData = await userRepository.findUsers(req.body.username, req.body.fromDate && convertDateFormat(req.body.fromDate), req.body.toDate && convertDateFormat(req.body.toDate), req.body.page);
     const groupList = await groupRepository.getAllGroup();
     userListData.data.forEach((user) => {
         user.position_name = user_entity_1.UserRole[Number(user.position_id)];
         const group = groupList.find(group => group.id == user.group_id);
         user.group_name = group ? group.name : '';
-        user.started_date_display = (0, dayjs_1.default)(user.started_date).format('DD/MM/YYYY');
+        user.started_date_display = (0, moment_1.default)(user.started_date)
+            .add(1, 'day')
+            .format('YYYY/MM/DD');
     });
-    const userListCSVData = await userRepository.getAllUsers(req.body.username, req.body.fromDate && convertDateFormat(req.body.fromDate), req.body.toDate && convertDateFormat(req.body.toDate));
-    const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
-    userListCSVData.data.forEach((user) => {
-        user.position_name = positionNameArr[Number(user.position_id)];
-        const group = groupList.find(group => group.id == user.group_id);
-        user.group_name = group ? group.name : '';
-        user.started_date_display = dayjs_1.default
-            .utc(user.started_date)
-            .format('DD/MM/YYYY');
-        user.created_date_display = (0, dayjs_1.default)(user.created_date).format('DD/MM/YYYY');
-        user.updated_date_display = (0, dayjs_1.default)(user.updated_date).format('DD/MM/YYYY');
-    });
-    req.session.userListCSV = userListCSVData.data;
+    req.session.search = {
+        username: req.body.username || '',
+        fromDate: req.body.fromDate || '',
+        toDate: req.body.toDate || '',
+    };
+    // req.session.search.username = req.body.username || '';
+    // req.session.search.fromDate = req.body.fromDate || '';
+    // req.session.search.toDate = req.body.toDate || '';
+    // const userListCSVData = await userRepository.getAllUsers(
+    //   req.body.username,
+    //   req.body.fromDate && convertDateFormat(req.body.fromDate),
+    //   req.body.toDate && convertDateFormat(req.body.toDate),
+    // );
+    // const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
+    // userListCSVData.data.forEach((user: any) => {
+    //   user.position_name = positionNameArr[Number(user.position_id)];
+    //   const group = groupList.find(group => group.id == user.group_id);
+    //   user.group_name = group ? group.name : '';
+    //   user.started_date_display = moment(user.started_date)
+    //     .add(1, 'day')
+    //     .format('DD/MM/YYYY');
+    //   user.started_date_display = moment(user.created_date)
+    //     .add(1, 'day')
+    //     .format('DD/MM/YYYY');
+    //   user.started_date_display = moment(user.updated_date)
+    //     .add(1, 'day')
+    //     .format('DD/MM/YYYY');
+    // });
+    // req.session.userListCSV = userListCSVData.data;
     const totalPage = Math.ceil(userListData.count / 10);
     let pageArray = [];
     if (totalPage < 6) {
@@ -173,11 +218,43 @@ const renderUserAddEditDelete = async (req, res, next) => {
     });
 };
 exports.renderUserAddEditDelete = renderUserAddEditDelete;
+function getCurrentDateTimeString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+    const dateTimeString = `list_user_${year}${month}${day}${hour}${minute}${second}`;
+    return dateTimeString;
+}
 const exportCSV = async (req, res, next) => {
     var _a;
     try {
+        const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
+        const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+        const groupList = await groupRepository.getAllGroup();
+        const userListCSVData = await userRepository.getAllUsers(req.session.search.username, req.session.search.fromDate &&
+            convertDateFormat(req.session.search.fromDate), req.session.search.toDate && convertDateFormat(req.session.search.toDate));
+        const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
+        userListCSVData.data.forEach((user) => {
+            console.log('user: ', user);
+            user.position_name = positionNameArr[Number(user.position_id)];
+            const group = groupList.find(group => group.id == user.group_id);
+            user.group_name = group ? group.name : '';
+            user.started_date_display = (0, moment_1.default)(user.started_date)
+                .add(1, 'day')
+                .format('DD/MM/YYYY');
+            user.created_date_display = (0, moment_1.default)(user.created_date)
+                .add(1, 'day')
+                .format('DD/MM/YYYY');
+            user.updated_date_display = (0, moment_1.default)(user.updated_date)
+                .add(1, 'day')
+                .format('DD/MM/YYYY');
+        });
         const parser = new plainjs_1.Parser();
-        const usersDownload = (_a = req.session.userListCSV) === null || _a === void 0 ? void 0 : _a.map((item) => ({
+        const usersDownload = (_a = userListCSVData.data) === null || _a === void 0 ? void 0 : _a.map((item) => ({
             id: item.id.toString(),
             name: item.name,
             email: item.email,
@@ -202,8 +279,9 @@ const exportCSV = async (req, res, next) => {
         const json2csvParser = new plainjs_1.Parser({ fields, withBOM: true });
         const csv = json2csvParser.parse(usersDownload);
         // const csv = parser.parse(usersDownload);
+        const filename = getCurrentDateTimeString();
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}.csv`);
         res.status(200).end(csv);
     }
     catch (err) {

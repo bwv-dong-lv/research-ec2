@@ -563,7 +563,7 @@ td {
 .header-username {
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 12rem;
+  /* width: 12rem; */
   /* overflow: hidden; */
   display: inline-block !important;
 }
