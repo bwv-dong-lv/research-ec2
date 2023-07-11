@@ -195,15 +195,10 @@ const renderUserAddEditDelete = async (req, res, next) => {
 };
 exports.renderUserAddEditDelete = renderUserAddEditDelete;
 function getCurrentDateTimeString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    const second = String(now.getSeconds()).padStart(2, '0');
-    const dateTimeString = `list_user_${year}${month}${day}${hour}${minute}${second}`;
-    return dateTimeString;
+    const currentDate = (0, moment_1.default)().utcOffset(7);
+    const formattedDate = currentDate.format('YYYYMMDDHHmmss');
+    const newFileName = 'list_user_' + formattedDate;
+    return newFileName;
 }
 const exportCSV = async (req, res, next) => {
     var _a;
