@@ -131,30 +131,6 @@ const searchUser = async (req, res, next) => {
         fromDate: req.body.fromDate || '',
         toDate: req.body.toDate || '',
     };
-    // req.session.search.username = req.body.username || '';
-    // req.session.search.fromDate = req.body.fromDate || '';
-    // req.session.search.toDate = req.body.toDate || '';
-    // const userListCSVData = await userRepository.getAllUsers(
-    //   req.body.username,
-    //   req.body.fromDate && convertDateFormat(req.body.fromDate),
-    //   req.body.toDate && convertDateFormat(req.body.toDate),
-    // );
-    // const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
-    // userListCSVData.data.forEach((user: any) => {
-    //   user.position_name = positionNameArr[Number(user.position_id)];
-    //   const group = groupList.find(group => group.id == user.group_id);
-    //   user.group_name = group ? group.name : '';
-    //   user.started_date_display = moment(user.started_date)
-    //     .add(1, 'day')
-    //     .format('DD/MM/YYYY');
-    //   user.started_date_display = moment(user.created_date)
-    //     .add(1, 'day')
-    //     .format('DD/MM/YYYY');
-    //   user.started_date_display = moment(user.updated_date)
-    //     .add(1, 'day')
-    //     .format('DD/MM/YYYY');
-    // });
-    // req.session.userListCSV = userListCSVData.data;
     const totalPage = Math.ceil(userListData.count / 10);
     let pageArray = [];
     if (totalPage < 6) {
@@ -239,7 +215,6 @@ const exportCSV = async (req, res, next) => {
             convertDateFormat(req.session.search.fromDate), req.session.search.toDate && convertDateFormat(req.session.search.toDate));
         const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
         userListCSVData.data.forEach((user) => {
-            console.log('user: ', user);
             user.position_name = positionNameArr[Number(user.position_id)];
             const group = groupList.find(group => group.id == user.group_id);
             user.group_name = group ? group.name : '';

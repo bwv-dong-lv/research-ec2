@@ -36,3 +36,36 @@ $(document).ready(function() {
     dateFormat: 'dd/mm/yy',
   });
 });
+
+function toDateObject(dateString) {
+  const dateParts = dateString.split('/');
+  return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+}
+// Custom validation method
+$.validator.addMethod(
+  'dateLessThan',
+  function(value, element, params) {
+    const fromField = $(params);
+    if (!this.optional(element) && !this.optional(fromField[0])) {
+      const fromDate = toDateObject(fromField.val());
+      const toDate = toDateObject(value);
+      return toDate <= fromDate;
+    }
+    return true;
+  },
+  '解約予定日は契約終了日前を指定してください。',
+);
+
+// Initialize the validation
+$(document).ready(function() {
+  $('#user-list-search-form').validate({
+    rules: {
+      fromDate: {
+        dateLessThan: '#user-list-to-date',
+      },
+    },
+    messages: {
+      fromDate: {},
+    },
+  });
+});

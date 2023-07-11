@@ -1269,3 +1269,8 @@ button[disabled] {
   max-width: 752px;
   margin: auto;
 }
+
+#user-list-search-form .error {
+  width: 10rem;
+  color: red;
+}
