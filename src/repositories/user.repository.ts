@@ -126,4 +126,10 @@ export class UserRepository extends Repository<User> {
     const user = await this.getUserByEmail(email);
     return user ? true : false;
   };
+
+  deleteUserById = async (userId: number, date: Date) => {
+    return await this.update(userId, {
+      deleted_date: date,
+    });
+  };
 }

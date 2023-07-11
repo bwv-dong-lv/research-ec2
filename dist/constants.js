@@ -39,7 +39,7 @@ exports.messages = {
     BAD_REQUEST: 'BAD REQUEST',
     ECL056: 'セッションにデータが存在しません。',
     ECL057: 'データの登録に失敗しました。',
-    EBT001: (fieldName) => `${fieldName} は必須です。`,
+    EBT001: (fieldName) => `${fieldName}は必須です。`,
     EBT002: (fieldName, maxLength, currentLength) => `${fieldName}は「${maxLength}」文字以下で入力してください。（現在${currentLength}文字)`,
     EBT003: (fieldName, minLength, currentLength) => `${fieldName}は「${minLength}」文字以上で入力してください。（現在${currentLength}文字)`,
     EBT004: (fieldName) => `${fieldName}は半角英数で入力してください`,
@@ -60,11 +60,7 @@ exports.messages = {
     E012: (fieldName, format) => `${fieldName} format is not correct. Please enter ${format} only.`,
     EBT017: () => `入力した情報のいずれかの情報が間違っています。`,
     EBT019: () => `すでにメールアドレスは登録されています。`,
-    I013: () => `Saved successfully.`,
-    E014: () => `Save failed.`,
-    E015: (fieldName) => `${fieldName} does not exist.`,
-    E016: () => `Permission denied.`,
-    E017: (from, to) => `{0} must be less than {1}.`,
-    I018: (id) => `Are you sure you want to delete the record with id ${id}?`,
+    EBT093: () => `登録・更新・削除処理に失敗しました。`,
+    EBT096: () => `登録・更新・削除処理に成功しました。`,
 };
 //# sourceMappingURL=constants.js.map

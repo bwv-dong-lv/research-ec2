@@ -43,7 +43,7 @@ export class GroupRepository extends Repository<Group> {
   };
 
   getAllGroup = async () => {
-    const groups = await this.find({});
+    const groups = await this.find({deleted_date: IsNull()});
     return groups;
   };
 }

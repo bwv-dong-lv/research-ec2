@@ -38,7 +38,7 @@ let GroupRepository = class GroupRepository extends typeorm_1.Repository {
             return await this.findOne({ id: groupId });
         };
         this.getAllGroup = async () => {
-            const groups = await this.find({});
+            const groups = await this.find({ deleted_date: (0, typeorm_1.IsNull)() });
             return groups;
         };
     }

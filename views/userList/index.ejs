@@ -1,13 +1,11 @@
 <div>
   <div class="">
-    <% if (flashMessage) { %>
-    <div id="flash-message" style="height: 5rem;" class="w-100 <%= flashMessage.includes('success') ? "bg-success" : "bg-danger"  %> mb-3 rounded text-white d-flex flex-column">
-      <div id="close-flash-message" style="cursor: pointer" class="d-flex justify-content-end">
-        <span style="width: 1.5rem; height: 1.5rem; font-size: 1.5rem">&times;</span>
-      </div>
+    <% if (flashMessage.includes('成功')) { %>
+    <%- include('../common/message_success') %>
+    <% } %>
 
-      <div class="d-flex justify-content-center"><%= flashMessage  %></div>
-    </div>
+    <% if (!flashMessage.includes('成功')) { %>
+    <%- include('../common/message_error') %>
     <% } %>
 
     <form id="user-list-search-form" action="/user" method="POST" name="user-list-search-form">
@@ -102,7 +100,7 @@
           <% userList.forEach(function(user) { %>
           <tr>
             <td><% if(loginUser.position_id == 0){ %>
-              <a style="text-decoration: underline;" href="/user/<%= user.id %>"><%= user.name %></a>
+              <a style="text-decoration: underline;" href="/user/crud/<%= user.id %>"><%= user.name %></a>
               <% } %>
               <% if(loginUser.position_id != 0){ %>
               <%= user.name %>
@@ -141,7 +139,7 @@
 
     <% if(loginUser.position_id == 0){ %>
     <div class="mt-4">
-      <button style="width: 6rem;" class="bg-white rounded mr-3" onClick="window.location.href='/user/add';">Add New</button>
+      <button style="width: 6rem;" class="bg-white rounded mr-3" onClick="window.location.href='/user/crud';">Add New</button>
 
       <% if(totalRow > 0){ %>
       <button style="width: 6rem;" class="bg-white rounded" onclick="exportCSV()">Export CSV</button>

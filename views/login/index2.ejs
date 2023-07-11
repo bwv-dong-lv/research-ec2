@@ -1,24 +1,22 @@
 <link rel="stylesheet" href="/public/asset/css/pages/account/login.css">
 
-<div style="margin-top: 10rem;" class="login-form">
+<div class="login-form">
   <form id="login-form" action="/login" method="post" name="login-form">
-    <!-- Email input -->
-    <div class="form-outline mb-4">
-      <label class="form-label" for="form1Example1">Email</label>
+    <div class="form-group">
+      <label class="m-bottom-10">Email</label>
       <input id="login-email" type="text" class="form-control p-left-10" name="email" value=<%= form.email%>>
     </div>
 
-    <!-- Password input -->
-    <div class="form-outline mb-4">
-      <label class="form-label" for="form1Example2">Password</label>
+    <div class="form-group">
+      <label class="m-bottom-10">Password</label>
       <input id="login-password" type="password" class="form-control p-left-10" name="password" value="<%= form.password  %>">
     </div>
 
     <%- include('../common/message_error') %>
 
-    <!-- Submit button -->
-    <button id="submit-login" type="submit" class="btn btn-primary btn-block">Login</button>
-
+    <div class="form-group text-center m-bottom-20">
+      <button style="" id="submit-login" type="submit">Login</button>
+    </div>
   </form>
 </div>
 <%- contentFor('pageTitle') %>
