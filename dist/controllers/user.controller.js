@@ -259,7 +259,7 @@ const renderUserAddEditDelete = async (req, res, next) => {
                 layout: 'layout/defaultLayout',
                 pageTitle: 'UserAddEditDelete',
                 userInfo: userInfo,
-                groupId: group || -1,
+                groupId: (group === null || group === void 0 ? void 0 : group.id) || -1,
                 groupList: groupList,
                 positionId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.position_id,
                 loginUser: req.session.user,
