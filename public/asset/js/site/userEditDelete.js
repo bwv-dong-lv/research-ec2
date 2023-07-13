@@ -1,10 +1,5 @@
-$(document).ready(function() {
-  $('#user-update-started-date').datepicker({
-    dateFormat: 'dd/mm/yy',
-  });
-});
-
 $('#user-update-started-date').datepicker({
+  dateFormat: 'dd/mm/yy',
   onSelect: function(dateText, inst) {
     // Trigger validation for the datepicker field
     $(this).valid();
@@ -70,6 +65,33 @@ $.validator.addMethod(
   'Please enter a date in the format dd/mm/yyyy.',
 );
 
+// Add a custom validation method to check for invalid days in a month
+$.validator.addMethod(
+  'validDay',
+  function(value, element) {
+    // Split the input value into day, month, and year
+    const parts = value.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    // Create a new Date object
+    const date = new Date(year, month - 1, day);
+
+    // Check if the date is valid
+    if (
+      date.getDate() === day &&
+      date.getMonth() === month - 1 &&
+      date.getFullYear() === year
+    ) {
+      return true; // Valid
+    }
+
+    return false; // Invalid
+  },
+  'Please enter a valid date.',
+);
+
 $('#user-add-form').validate({
   rules: {
     username: {
@@ -88,6 +110,7 @@ $('#user-add-form').validate({
     startedDate: {
       required: true,
       dateDDMMYYYY: true,
+      validDay: true,
     },
     position: {
       required: true,
@@ -127,6 +150,8 @@ $('#user-add-form').validate({
     },
     startedDate: {
       required: 'Started Dateは必須です。',
+      dateDDMMYYYY: 'Started Dateは日付を正しく入力してください。',
+      validDay: 'Started Dateは日付を正しく入力してください。',
     },
     position: {
       required: 'Positionは必須です。',
@@ -168,5 +193,17 @@ const maxLength = 12;
 $('#user-add-group > option').text(function(i, text) {
   if (text.length > maxLength) {
     return text.substr(0, maxLength) + ' ...';
+  }
+});
+
+document.getElementById('submit-update').disabled = true;
+
+window.addEventListener('load', function() {
+  document.getElementById('submit-update').disabled = false;
+});
+
+document.getElementById('user-add-form').addEventListener('submit', function() {
+  if ($('#user-add-form').valid()) {
+    document.getElementById('submit-update').disabled = true;
   }
 });
