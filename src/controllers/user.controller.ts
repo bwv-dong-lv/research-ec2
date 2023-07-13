@@ -334,7 +334,7 @@ export const renderUserAddEditDelete = async (
         layout: 'layout/defaultLayout',
         pageTitle: 'UserAddEditDelete',
         userInfo: userInfo,
-        groupId: group || -1,
+        groupId: group?.id || -1,
         groupList: groupList,
         positionId: userInfo?.position_id,
         loginUser: req.session.user,
