@@ -1,0 +1,8 @@
+#user-add-form {
+  .error {
+    color: red;
+    width: 10rem;
+    font-size: 14px;
+    word-wrap: break-word;
+  }
+}

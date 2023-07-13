@@ -21,6 +21,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import tz from 'dayjs/plugin/timezone';
 import {time} from 'console';
+import {hashPassword} from '../utils/bcrypt';
+import {cache} from 'ejs';
 dayjs.extend(utc);
 dayjs.extend(tz);
 /**
@@ -34,6 +36,9 @@ export const renderUserList = async (
   if (!req.session.user) {
     res.redirect('/login');
   }
+  const tempSession = {...req.session};
+
+  req.session.flashMessage = '';
 
   res.render('userList/index', {
     layout: 'layout/defaultLayout',
@@ -50,7 +55,7 @@ export const renderUserList = async (
     totalRow: -1,
     prev3dots: false,
     next3dots: false,
-    flashMessage: '',
+    flashMessage: tempSession.flashMessage || '',
   });
 };
 
@@ -131,13 +136,6 @@ export const searchUser = async (
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
 
-  // const userListData = await userRepository.findUsers(
-  //   req.body.username,
-  //   req.body.fromDate && convertDateFormat(req.body.fromDate),
-  //   req.body.toDate && convertDateFormat(req.body.toDate),
-  //   req.body.page,
-  // );
-
   const userListData = await userRepository.findUsers(
     req.body.username,
     req.body.fromDate && convertDateFormat(req.body.fromDate),
@@ -198,35 +196,6 @@ export const searchUser = async (
     totalRow: userListData.count,
     prev3dots: pageArray[0] > 1,
     next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
-    flashMessage: '',
-  });
-};
-
-/**
- * GET user add edit delete
- */
-export const renderUserAddEditDelete = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  }
-
-  res.render('userAddEditDelete/index', {
-    layout: 'layout/defaultLayout',
-    pageTitle: 'UserAddEditDelete',
-    usernameHeader: req.session.user?.name,
-    username: '',
-    loginUser: req.session.user,
-    userList: [],
-    fromDate: '',
-    toDate: '',
-    pageArray: [],
-    currentPage: 1,
-    lastPage: 0,
-    totalRow: 0,
     flashMessage: '',
   });
 };
@@ -319,5 +288,355 @@ export const exportCSV = async (
     res.status(200).end(csv);
   } catch (err) {
     console.error(err);
+  }
+};
+
+/**
+ * GET user add edit delete
+ */
+export const renderUserAddEditDelete = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  const userRepository = getCustomRepository(UserRepository);
+  const groupRepository = getCustomRepository(GroupRepository);
+
+  const groupList = await groupRepository.getAllGroup();
+
+  const tempSession = {...req.session};
+
+  req.session.flashMessage = '';
+
+  // update user
+  if (req.params.userId) {
+    const userInfo: any = await userRepository.getUserById(
+      Number(req.params.userId),
+    );
+
+    if (userInfo) {
+      const group = await groupRepository.getGroupById(userInfo.group_id);
+
+      userInfo.started_date = moment(userInfo.started_date)
+        .add(1, 'day')
+        .format('DD/MM/YYYY');
+
+      userInfo.password = tempSession.updateUserInfo?.password || '';
+      userInfo.email = tempSession.updateUserInfo?.email || userInfo.email;
+
+      req.session.updateUserInfo = '';
+
+      res.render('userEditDelete/index', {
+        layout: 'layout/defaultLayout',
+        pageTitle: 'UserAddEditDelete',
+        userInfo: userInfo,
+        groupId: group || -1,
+        groupList: groupList,
+        positionId: userInfo?.position_id,
+        loginUser: req.session.user,
+        flashMessage: tempSession.flashMessage ? tempSession.flashMessage : '',
+      });
+    }
+  } else {
+    req.session.addUserInfo = '';
+
+    //add user
+    res.render('userAdd/index', {
+      layout: 'layout/defaultLayout',
+      pageTitle: 'UserAddEditDelete',
+      userInfo: tempSession.addUserInfo || '',
+      groupId: tempSession.addUserInfo?.groupId || -1,
+      groupList: groupList,
+      positionId: tempSession.addUserInfo?.positionId || -1,
+      loginUser: req.session.user,
+      flashMessage: tempSession.flashMessage ? tempSession.flashMessage : '',
+    });
+  }
+};
+
+export const addUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  const userRepository = getCustomRepository(UserRepository);
+
+  if (await userRepository.getUserByEmail(req.body.email)) {
+    // error email address is registed
+    req.session.addUserInfo = {};
+
+    req.session.addUserInfo = {
+      id: req.body.id,
+      email: req.body.email,
+      name: req.body.username,
+      password: req.body.password,
+      started_date: req.body.startedDate,
+      groupId: req.body.group,
+      positionId: req.body.position,
+    };
+
+    req.session.flashMessage = messages.EBT019();
+    res.redirect('/user/crud');
+  } else {
+    // create success
+    const user: Partial<User> = {
+      email: req.body.email,
+      password: await hashPassword(req.body.password),
+      name: req.body.username,
+      group_id: Number(req.body.group),
+      started_date: new Date(req.body.startedDate),
+      position_id: req.body.position,
+      created_date: new Date(),
+      updated_date: new Date(),
+    };
+
+    try {
+      await userRepository.createUser(user);
+
+      req.session.flashMessage = messages.EBT096();
+      res.redirect('/user/crud');
+    } catch (error) {
+      req.session.addUserInfo = {};
+
+      req.session.addUserInfo = {
+        id: req.body.id,
+        email: req.body.email,
+        name: req.body.username,
+        password: req.body.password,
+        started_date: req.body.startedDate,
+        groupId: req.body.group,
+        positionId: req.body.position,
+      };
+
+      req.session.flashMessage = messages.EBT093();
+      res.redirect('/user/crud');
+    }
+  }
+};
+
+export const isSelfEmail = async (email: string, emailCheck: string) => {
+  const userRepository = getCustomRepository(UserRepository);
+
+  const user = await userRepository.getUserByEmail(email);
+  const userCheck = await userRepository.getUserByEmail(emailCheck);
+
+  if (user && userCheck && user.id === userCheck.id) {
+    return true;
+  }
+  return false;
+};
+
+export const canEmailUpdate = async (email: string) => {
+  const userRepository = getCustomRepository(UserRepository);
+
+  const user = await userRepository.getUserByEmail(email);
+  return user ? false : true;
+};
+
+export const updateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  const userRepository = getCustomRepository(UserRepository);
+  const groupRepository = getCustomRepository(GroupRepository);
+
+  const groupList = await groupRepository.getAllGroup();
+
+  const userUpdate = await userRepository.getUserById(Number(req.body.userId));
+
+  if (userUpdate) {
+    if (await isSelfEmail(req.body.email, userUpdate?.email)) {
+      // update giu nguyen email
+      const parts = req.body.startedDate.split('/');
+      const day = parts[0];
+      const month = parts[1];
+      const year = parts[2];
+
+      // Format the date components into MySQL date format (YYYY-DD-MM)
+      const mysqlDate = `${year}-${month}-${day}`;
+
+      const user: Partial<User> = {
+        password: req.body.password
+          ? await hashPassword(req.body.password)
+          : undefined,
+        name: req.body.username,
+        group_id: Number(req.body.group),
+        started_date: new Date(mysqlDate),
+        position_id: Number(req.body.position),
+        updated_date: new Date(),
+      };
+      try {
+        await userRepository.updateUser(Number(req.body.userId), user);
+
+        req.session.updateUserInfo = {};
+
+        req.session.updateUserInfo = {
+          id: req.body.id,
+          email: req.body.email,
+          name: req.body.username,
+          password: '',
+          started_date: req.body.startedDate,
+          groupId: req.body.group,
+          positionId: req.body.position,
+        };
+
+        req.session.flashMessage = messages.EBT096();
+        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      } catch (error) {
+        req.session.updateUserInfo = {};
+
+        req.session.updateUserInfo = {
+          id: req.body.id,
+          email: req.body.email,
+          name: req.body.username,
+          password: req.body.password,
+          started_date: req.body.startedDate,
+          groupId: req.body.group,
+          positionId: req.body.position,
+        };
+
+        req.session.flashMessage = messages.EBT093();
+        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      }
+    } else {
+      // update user with email
+      if (await canEmailUpdate(req.body.email)) {
+        // can update with email
+        const parts = req.body.startedDate.split('/');
+        const day = parts[0];
+        const month = parts[1];
+        const year = parts[2];
+
+        // Format the date components into MySQL date format (YYYY-DD-MM)
+        const mysqlDate = `${year}-${month}-${day}`;
+
+        const user: Partial<User> = {
+          email: req.body.email,
+          password: req.body.password
+            ? await hashPassword(req.body.password)
+            : undefined,
+          name: req.body.username,
+          group_id: Number(req.body.group),
+          started_date: new Date(mysqlDate),
+          position_id: Number(req.body.position),
+          updated_date: new Date(),
+        };
+        try {
+          await userRepository.updateUser(Number(req.body.userId), user);
+
+          req.session.updateUserInfo = {};
+
+          req.session.updateUserInfo = {
+            id: req.body.id,
+            email: req.body.email,
+            name: req.body.username,
+            password: '',
+            started_date: req.body.startedDate,
+            groupId: req.body.group,
+            positionId: req.body.position,
+          };
+
+          req.session.flashMessage = messages.EBT096();
+          res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        } catch (error) {
+          req.session.updateUserInfo = {};
+
+          req.session.updateUserInfo = {
+            id: req.body.id,
+            email: req.body.email,
+            name: req.body.username,
+            password: req.body.password,
+            started_date: req.body.startedDate,
+            groupId: req.body.group,
+            positionId: req.body.position,
+          };
+
+          req.session.flashMessage = messages.EBT093();
+          res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        }
+      } else {
+        req.session.updateUserInfo = {};
+
+        req.session.updateUserInfo = {
+          id: req.body.id,
+          email: req.body.email,
+          name: req.body.username,
+          password: req.body.password,
+          started_date: req.body.startedDate,
+          groupId: req.body.group,
+          positionId: req.body.position,
+        };
+
+        req.session.flashMessage = messages.EBT019();
+        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      }
+    }
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  const userRepository = getCustomRepository(UserRepository);
+  const groupRepository = getCustomRepository(GroupRepository);
+
+  const groupList = await groupRepository.getAllGroup();
+
+  try {
+    await userRepository.deleteUserById(Number(req.body.userId), new Date());
+
+    // res.render('userList/index', {
+    //   layout: 'layout/defaultLayout',
+    //   pageTitle: 'User List',
+    //   usernameHeader: req.session.user?.name,
+    //   username: '',
+    //   loginUser: req.session.user,
+    //   userList: [],
+    //   fromDate: '',
+    //   toDate: '',
+    //   pageArray: [],
+    //   currentPage: 1,
+    //   lastPage: 0,
+    //   totalRow: -1,
+    //   prev3dots: false,
+    //   next3dots: false,
+    //   flashMessage: messages.EBT096(),
+    // });
+    req.session.flashMessage = messages.EBT096();
+    res.redirect('/user');
+  } catch (error) {
+    req.session.updateUserInfo = {};
+
+    req.session.updateUserInfo = {
+      id: req.body.id,
+      email: req.body.email,
+      name: req.body.username,
+      password: req.body.password,
+      started_date: req.body.startedDate,
+      groupId: req.body.group,
+      positionId: req.body.position,
+    };
+
+    req.session.flashMessage = messages.EBT093();
+    res.redirect(`/user/crud/${Number(req.body.userId)}`);
   }
 };

@@ -107,6 +107,11 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             const user = await this.getUserByEmail(email);
             return user ? true : false;
         };
+        this.deleteUserById = async (userId, date) => {
+            return await this.update(userId, {
+                deleted_date: date,
+            });
+        };
     }
 };
 UserRepository = __decorate([

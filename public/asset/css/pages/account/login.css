@@ -75,16 +75,15 @@ label.error {
   border-radius: 2px;
 }
 
-
 button {
   display: inline-block;
   overflow: hidden;
   height: 30px;
   padding: 0 1em;
-  color: #BF474D;
+  color: #bf474d;
   font-size: 14px;
   line-height: 30px;
-  border: 1px solid #BF474D;
+  border: 1px solid #bf474d;
   border-radius: 4px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -98,6 +97,7 @@ body {
   font-size: 13px;
   position: static !important;
   min-height: 80% !important;
+  background-color: #e3e3e3;
 }
 
 .m-bottom-10 {
@@ -121,9 +121,5 @@ label {
 }
 
 .help-block.has-error {
-	margin-left: 0px !important;
-}
-
-body {
-  background-color: #fcfcfc;
+  margin-left: 0px !important;
 }

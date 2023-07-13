@@ -50,7 +50,7 @@ export const messages = {
   ECL056: 'セッションにデータが存在しません。',
   ECL057: 'データの登録に失敗しました。',
 
-  EBT001: (fieldName: string) => `${fieldName} は必須です。`,
+  EBT001: (fieldName: string) => `${fieldName}は必須です。`,
   EBT002: (fieldName: string, maxLength: number, currentLength: number) =>
     `${fieldName}は「${maxLength}」文字以下で入力してください。（現在${currentLength}文字)`,
   EBT003: (fieldName: string, minLength: number, currentLength: number) =>
@@ -79,11 +79,6 @@ export const messages = {
     `${fieldName} format is not correct. Please enter ${format} only.`,
   EBT017: () => `入力した情報のいずれかの情報が間違っています。`,
   EBT019: () => `すでにメールアドレスは登録されています。`,
-  I013: () => `Saved successfully.`,
-  E014: () => `Save failed.`,
-  E015: (fieldName: string) => `${fieldName} does not exist.`,
-  E016: () => `Permission denied.`,
-  E017: (from: string, to: string) => `{0} must be less than {1}.`,
-  I018: (id: number) =>
-    `Are you sure you want to delete the record with id ${id}?`,
+  EBT093: () => `登録・更新・削除処理に失敗しました。`,
+  EBT096: () => `登録・更新・削除処理に成功しました。`,
 };

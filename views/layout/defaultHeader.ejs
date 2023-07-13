@@ -6,11 +6,11 @@
         <!-- <h3 class="ml-5">Intern Training</h3> -->
 
         <div class="ml-15px text-header header-username">
-          <% if(usernameHeader) { %>
+          <% if(loginUser) { %>
           <!-- <ul class="navbar-nav">
             <li class="dropdown cursor-pointer">
               <a style="padding: 7px;" id="navbarDropdownUser" class="d-inline-block mr-2" data-toggle="dropdown">
-                <%= usernameHeader %>
+                <%= loginUser.name %>
               </a>
             </li>
 
@@ -21,7 +21,7 @@
 
           <div>
             <a style="padding: 7px;" id="navbarDropdownUser" class="d-inline-block mr-2" data-toggle="dropdown">
-              <%= usernameHeader %>
+              <%= loginUser.name %>
             </a>
 
             <a href="/logout" type="button" class="button btn-logout" style="color: #BF474D;">Logout</a>
