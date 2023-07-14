@@ -1,1 +1,109 @@
-<h1>Group List</h1>
+<div>
+  <div class="">
+    <% if (flashMessage.includes('成功')) { %>
+    <%- include('../common/message_success') %>
+    <% } %>
+
+    <% if (!flashMessage.includes('成功')) { %>
+    <%- include('../common/message_error') %>
+    <% } %>
+
+    <%- include('../common/message_mutiple_error') %>
+
+  </div>
+
+  <div class="">
+    <form id="group-list-form" action="/group" method="POST" name="group-list-form">
+      <div class="d-flex justify-content-between">
+        <input style="display: none;" id="save-page" name="page" value="<%= currentPage  %>" type="text" />
+        <input style="display: none;" id="save-last-page" name="lastPage" value="<%= lastPage  %>" type="text" />
+
+        <% if(totalRow > 10){ %>
+        <div style="width: 100%;" class="mt-4">
+          <div class="d-flex justify-content-center">
+            <button id="first-page" class="bg-light rounded-left border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">最初</button>
+            <button id="prev-page" class="bg-light border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">前へ</button>
+
+            <% if(prev3dots){ %>
+            <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
+            <% } %>
+
+            <% pageArray.forEach(function(item) { %>
+            <input style="width: 2.8rem;" class="rounded-0 bg-light page-btn <%= item != currentPage ? "border border-secondary" : "border-primary text-primary font-weight-bold"  %>" <%= item == currentPage && "disabled"  %> onclick="pageClick(this)" value="<%= item %>" type="submit" />
+            <% }); %>
+
+            <% if(next3dots){ %>
+            <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
+            <% } %>
+
+            <button id="next-page" class="bg-light border <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">次へ</button>
+            <button id="last-page" class="bg-light border rounded-right <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">最終</button>
+          </div>
+        </div>
+    </form>
+    <% } %>
+
+  </div>
+
+  <div class="w-100 mt-4">
+    <table style="table-layout: fixed; width: 50rem;" class="table table-bordered ">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Group Name</th>
+          <th scope="col">Group Note</th>
+          <th scope="col">Group Leader</th>
+          <th scope="col">Floor Number</th>
+          <th scope="col">Created Date</th>
+          <th scope="col">Updated Date</th>
+          <th scope="col">Deleted Date</th>
+        </tr>
+      </thead>
+      <% if(totalRow > 0){ %>
+      <tbody>
+        <% groupList.forEach(function(group) { %>
+        <tr>
+          <td><%= group.id %></td>
+          <td><%= group.name %></td>
+          <td><%= group.note %></td>
+          <td><%= group.group_leader_name %></td>
+          <td><%= group.group_floor_number %></td>
+          <td>
+            <div style="margin-left: 30%;">
+              <%= group.created_date_display %>
+            </div>
+          </td>
+          <td>
+            <div style="margin-left: 30%;">
+              <%= group.updated_date_display %>
+            </div>
+          </td>
+          <td>
+            <div style="margin-left: 30%;">
+              <%= group.deleted_date_display %>
+            </div>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+      <% } %>
+
+    </table>
+
+    <% if(totalRow == 0){ %>
+    No Group Found
+    <% } %>
+  </div>
+
+  <div class="mt-4 d-flex flex-column justify-content-center align-items-center">
+    <form style="display: none;" id="csv-form" action="/upload" method="POST" enctype="multipart/form-data">
+      <input style="display: none;" type="file" name="csvFile" id="csv-file" />
+    </form>
+    <button style="width: 10rem;" id="import-btn" class="rounded btn btn-primary" onclick="importCSV()">Import CSV</button>
+    <p id="error-csv" class="text-danger mt-2"></p>
+  </div>
+</div>
+</div>
+
+<script src="/public/asset/js/site/groupList.js"></script>
+</div>

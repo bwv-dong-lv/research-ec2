@@ -17,8 +17,10 @@ declare module 'express-session' {
     search: any;
     userListCSV: any;
     flashMessage: string;
+    flashMessageCSV: any;
     addUserInfo: any;
     updateUserInfo: any;
+    groupPage: any;
   }
 }
 

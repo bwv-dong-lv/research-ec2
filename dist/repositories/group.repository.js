@@ -27,19 +27,37 @@ let GroupRepository = class GroupRepository extends typeorm_1.Repository {
             });
             return this.save(Object.assign(Object.assign({}, property), user_1.default));
         };
-        // deleteUserById = async (userId: number, adminId: number, date: Date) => {
-        //   return await this.update(userId, {
-        //     del_flg: 1,
-        //     deleted_by: adminId,
-        //     deleted_at: date,
-        //   });
-        // };
         this.getGroupById = async (groupId) => {
-            return await this.findOne({ id: groupId });
+            return await this.findOne({ where: { id: groupId, deleted_date: (0, typeorm_1.IsNull)() } });
         };
         this.getAllGroup = async () => {
             const groups = await this.find({ deleted_date: (0, typeorm_1.IsNull)() });
             return groups;
+        };
+        this.getAllGroupNull = async () => {
+            const [result, total] = await this.findAndCount({});
+            return {
+                data: result,
+                count: total,
+            };
+        };
+        this.getGroups = async (page) => {
+            const [result, total] = await this.findAndCount({
+                order: {
+                    id: 'DESC',
+                },
+                take: 10,
+                skip: page ? (page - 1) * 10 : 0,
+            });
+            return {
+                data: result,
+                count: total,
+            };
+        };
+        this.deleteGroupById = async (groupId) => {
+            return await this.update(groupId, {
+                deleted_date: new Date(),
+            });
         };
     }
 };

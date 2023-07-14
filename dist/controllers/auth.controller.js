@@ -50,11 +50,6 @@ exports.login = login;
 const logout = async (req, res, next) => {
     req.session.destroy(function (err) { });
     const redirectURL = '/login';
-    // if (req.query.redirect !== undefined) {
-    //   redirectURL += `?redirect=${encodeURIComponent(
-    //     req.query.redirect!.toString(),
-    //   )}`;
-    // }
     res.redirect(redirectURL);
 };
 exports.logout = logout;
