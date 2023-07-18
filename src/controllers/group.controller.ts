@@ -1,3 +1,4 @@
+import {IsNull} from 'typeorm';
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /**
@@ -16,7 +17,7 @@ import {messages} from '../constants';
 import {GroupRepository} from '../repositories/group.repository';
 import csvParser from 'csv-parser';
 import {Group} from '../entities/group.entity';
-
+import path from 'path';
 /**
  * GET group
  */
@@ -211,26 +212,26 @@ export const importCSV = async (
     }
 
     const results: any = [];
+    let headerCSV: any = [];
 
     const groupRepository = getCustomRepository(GroupRepository);
 
-    fs.createReadStream(req.file.path)
+    const filePath = path.join(__dirname, '../../', req.file.path);
+
+    fs.createReadStream(filePath)
       .pipe(csvParser())
       .on('data', data => {
         results.push(data);
       })
+      .on('headers', async headers => {
+        headerCSV = headers;
+      })
       .on('end', async () => {
         fs.unlinkSync(req.file.path);
 
-        if (results.length === 0) {
-          res.redirect('/group');
-          return;
-        }
-
         const errorTextArr: string[] = [];
 
-        // check header
-        if (await checkHeaderCSV(Object.keys(results[0]))) {
+        if (await checkHeaderCSV(headerCSV)) {
           for (let i = 0; i < results.length; i++) {
             const row = results[i];
 

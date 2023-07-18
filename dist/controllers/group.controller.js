@@ -13,6 +13,7 @@ const constants_1 = require("../constants");
 const group_repository_1 = require("../repositories/group.repository");
 const csv_parser_1 = __importDefault(require("csv-parser"));
 const group_entity_1 = require("../entities/group.entity");
+const path_1 = __importDefault(require("path"));
 /**
  * GET group
  */
@@ -140,21 +141,21 @@ const importCSV = async (req, res, next) => {
             console.log('missing file');
         }
         const results = [];
+        let headerCSV = [];
         const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
-        fs_1.default.createReadStream(req.file.path)
+        const filePath = path_1.default.join(__dirname, '../../', req.file.path);
+        fs_1.default.createReadStream(filePath)
             .pipe((0, csv_parser_1.default)())
             .on('data', data => {
             results.push(data);
         })
+            .on('headers', async (headers) => {
+            headerCSV = headers;
+        })
             .on('end', async () => {
             fs_1.default.unlinkSync(req.file.path);
-            if (results.length === 0) {
-                res.redirect('/group');
-                return;
-            }
             const errorTextArr = [];
-            // check header
-            if (await (0, exports.checkHeaderCSV)(Object.keys(results[0]))) {
+            if (await (0, exports.checkHeaderCSV)(headerCSV)) {
                 for (let i = 0; i < results.length; i++) {
                     const row = results[i];
                     (0, exports.checkRequiredCSV)(errorTextArr, row, i);
