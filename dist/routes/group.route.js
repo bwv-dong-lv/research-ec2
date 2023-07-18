@@ -22,6 +22,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Group Router
@@ -29,8 +32,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const groupController = __importStar(require("../controllers/group.controller"));
 const noCache_1 = require("../middlewares/noCache");
-const checkAuth_1 = require("../middlewares/checkAuth");
+const multer_1 = __importDefault(require("multer"));
+const checkAuthGroup_1 = require("../middlewares/checkAuthGroup");
 const groupRouter = (0, express_1.Router)();
-groupRouter.get('/group', [checkAuth_1.checkUser, noCache_1.noCache], groupController.renderGroupList);
+groupRouter.get('/group', [checkAuthGroup_1.checkAuthGroup, noCache_1.noCache], groupController.renderGroupList);
+groupRouter.post('/group', [checkAuthGroup_1.checkAuthGroup, noCache_1.noCache], groupController.postGroupList);
+const storage = multer_1.default.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    },
+});
+const uploads = (0, multer_1.default)({
+    storage: storage,
+});
+groupRouter.post('/upload', [checkAuthGroup_1.checkAuthGroup, uploads.single('csvFile')], groupController.importCSV);
 exports.default = groupRouter;
 //# sourceMappingURL=group.route.js.map

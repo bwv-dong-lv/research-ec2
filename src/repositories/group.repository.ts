@@ -1,14 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import {
-  Between,
-  EntityRepository,
-  In,
-  IsNull,
-  LessThan,
-  Like,
-  MoreThan,
-  Repository,
-} from 'typeorm';
+import {EntityRepository, IsNull, Repository} from 'typeorm';
 import user from '../middlewares/user';
 import {Group} from '../entities/group.entity';
 
@@ -30,20 +21,41 @@ export class GroupRepository extends Repository<Group> {
     });
   };
 
-  // deleteUserById = async (userId: number, adminId: number, date: Date) => {
-  //   return await this.update(userId, {
-  //     del_flg: 1,
-  //     deleted_by: adminId,
-  //     deleted_at: date,
-  //   });
-  // };
-
   getGroupById = async (groupId: number) => {
-    return await this.findOne({id: groupId});
+    return await this.findOne({where: {id: groupId, deleted_date: IsNull()}});
   };
 
   getAllGroup = async () => {
     const groups = await this.find({deleted_date: IsNull()});
     return groups;
+  };
+
+  getAllGroupNull = async () => {
+    const [result, total] = await this.findAndCount({});
+    return {
+      data: result,
+      count: total,
+    };
+  };
+
+  getGroups = async (page: number) => {
+    const [result, total] = await this.findAndCount({
+      order: {
+        id: 'DESC',
+      },
+      take: 10,
+      skip: page ? (page - 1) * 10 : 0,
+    });
+
+    return {
+      data: result,
+      count: total,
+    };
+  };
+
+  deleteGroupById = async (groupId: number) => {
+    return await this.update(groupId, {
+      deleted_date: new Date(),
+    });
   };
 }

@@ -15,23 +15,23 @@
             <label for="username">User Name</label>
 
             <div style="height: 3.6rem;" class="d-flex flex-column">
-              <input style="width: 10rem;" id="user-list-username" type="text" name="username" value="<%= username  %>">
+              <input style="width: 10rem;" id="user-list-username" class="form-control" type="text" name="username" value="<%= username  %>">
             </div>
           </div>
 
           <div class="d-flex justify-content-between">
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center mr-5">
+            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
               <label for="fromDate">Started Date From</label>
-              <!-- <input style="width: 10rem;" id="user-list-from-date" type="date" name="fromDate" value="<%= fromDate  %>"> -->
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-list-from-date" name="fromDate" type="text" value="<%= fromDate  %>">
+                <input style="width: 10rem;" id="user-list-from-date" class="form-control" name="fromDate" type="text" value="<%= fromDate  %>">
               </div>
             </div>
 
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center">
+            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
               <label for="toDate">Started Date To</label>
-              <input style="width: 10rem;" id="user-list-to-date" name="toDate" type="text" value="<%= toDate  %>">
-              <!-- <input style="width: 10rem;" id="user-list-to-date" type="date" name="toDate" value="<%= toDate  %>"> -->
+              <div class="d-flex flex-column">
+                <input style="width: 10rem;" id="user-list-to-date" class="form-control" name="toDate" type="text" value="<%= toDate  %>">
+              </div>
             </div>
           </div>
         </div>
@@ -39,8 +39,8 @@
 
       <div style="width: 35%;" class="mt-5">
         <div class="d-flex justify-content-end mt-3">
-          <button style="width: 6rem;" class="bg-white rounded" onClick="window.location.href='/user';" type="reset">Clear</button>
-          <button style="width: 6rem;" class="bg-white rounded ml-3" type="submit">Search</button>
+          <button style="width: 6rem;" class="rounded btn btn-outline-dark" onClick="window.location.href='/user';" type="reset">Clear</button>
+          <button style="width: 6rem;" class="btn btn-primary rounded ml-3" type="submit">Search</button>
         </div>
       </div>
 
@@ -57,25 +57,25 @@
       <% } %>
 
       <% if(totalRow > 10){ %>
-      <div style="width: 40%;" class="mt-4">
-        <div class="d-flex justify-content-end">
-          <button id="first-page" class="bg-light" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">最初</button>
-          <button id="prev-page" class="bg-light" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">前へ</button>
+      <div style="" class="mt-4 w-100">
+        <div class="d-flex justify-content-center">
+          <button id="first-page" class="bg-light rounded-left border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">最初</button>
+          <button id="prev-page" class="bg-light border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">前へ</button>
 
           <% if(prev3dots){ %>
           <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
           <% } %>
 
           <% pageArray.forEach(function(item) { %>
-          <input class="page-btn <%= item != currentPage ? "border" : "border-primary text-dark"  %>" <%= item == currentPage && "disabled"  %> onclick="pageClick(this)" value="<%= item %>" type="submit" />
+          <input style="width: 2.8rem; background-color: white;" class="page-btn <%= item != currentPage ? "border border-secondary" : "border-primary text-primary font-weight-bold"  %>" <%= item == currentPage && "disabled"  %> onclick="pageClick(this)" value="<%= item %>" type="submit" />
           <% }); %>
 
           <% if(next3dots){ %>
           <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
           <% } %>
 
-          <button id="next-page" class="bg-light" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">次へ</button>
-          <button id="last-page" class="bg-light" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">最終</button>
+          <button id="next-page" class="bg-light border <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">次へ</button>
+          <button id="last-page" class="bg-light border rounded-right <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">最終</button>
         </div>
       </div>
       <% } %>
@@ -86,7 +86,7 @@
 
     <div class="w-100 mt-4">
       <% if(totalRow > 0){ %>
-      <table style="table-layout: fixed; width: 50rem;" class="table-bordered">
+      <table style="table-layout: fixed; width: 50rem;" class="table table-bordered">
         <thead>
           <tr>
             <th scope="col">User Name</th>
@@ -109,7 +109,7 @@
             <td style="text-decoration: underline;"><%= user.email %></td>
             <td><%= user.group_name %></td>
             <td>
-              <div style="margin-left: 30%;">
+              <div style="margin-left: 40%;">
                 <%= user.started_date_display %>
               </div>
             </td>
@@ -138,11 +138,11 @@
     </div>
 
     <% if(loginUser.position_id == 0){ %>
-    <div class="mt-4">
-      <button style="width: 6rem;" class="bg-white rounded mr-3" onClick="window.location.href='/user/crud';">Add New</button>
+    <div class="mt-4 d-flex justify-content-center">
+      <button style="width: 6rem; border-radius: 1.5rem;" class="btn btn-info mr-3" onClick="window.location.href='/user/crud';">Add New</button>
 
       <% if(totalRow > 0){ %>
-      <button style="width: 6rem;" class="bg-white rounded" onclick="exportCSV()">Export CSV</button>
+      <button style="width: 8rem; height: 2.5rem; border-radius: 1.5rem;" class="btn btn-success" onclick="exportCSV()">Export CSV</button>
       <% } %>
     </div>
     <% } %>

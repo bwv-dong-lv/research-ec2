@@ -4,15 +4,13 @@
  */
 import {Request, Response, NextFunction} from 'express';
 
-import {User} from '../entities/user.entity';
 import _ from 'lodash';
 
-import moment from 'moment';
 import {getCustomRepository} from 'typeorm';
 import {UserRepository} from '../repositories/user.repository';
 
 import {messages} from '../constants';
-import {comparePassword, hashPassword} from '../utils/bcrypt';
+import {comparePassword} from '../utils/bcrypt';
 
 /**
  * GET login
@@ -72,10 +70,5 @@ export const logout = async (
   req.session.destroy(function(err) {});
 
   const redirectURL = '/login';
-  // if (req.query.redirect !== undefined) {
-  //   redirectURL += `?redirect=${encodeURIComponent(
-  //     req.query.redirect!.toString(),
-  //   )}`;
-  // }
   res.redirect(redirectURL);
 };

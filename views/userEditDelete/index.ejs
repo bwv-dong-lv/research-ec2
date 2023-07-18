@@ -16,13 +16,13 @@
           <div class="d-flex justify-content-between">
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center mr-5">
               <input style="display: none;" name="userId" value="<%= userInfo.id || "" %>" />
-              <label for="fromDate"><%= userInfo.id || "" %></label>
+              <label class="font-weight-bold h5" for="fromDate"><%= userInfo.id || "" %></label>
             </div>
 
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
               <label for="toDate">User Name</label>
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-add-name" name="username" type="text" value="<%= userInfo.name || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
+                <input style="width: 10rem;" id="user-add-name" class="form-control" name="username" type="text" value="<%= userInfo.name || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
               </div>
             </div>
           </div>
@@ -31,7 +31,7 @@
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
               <label>Email</label>
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-add-email" name="email" type="text" value="<%= userInfo.email || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
+                <input style="width: 10rem;" id="user-add-email" class="form-control" name="email" type="text" value="<%= userInfo.email || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
               </div>
             </div>
 
@@ -39,7 +39,7 @@
               <label>Group</label>
 
               <div class="d-flex flex-column">
-                <select style="width: 10rem;" id="user-add-group" name="group" <%= loginUser.position_id != 0 && "disabled"  %>>
+                <select style="width: 10rem;" id="user-add-group" class="form-control" name="group" <%= loginUser.position_id != 0 && "disabled"  %>>
 
                   <% if (groupId == -1) { %>
                   <option selected disabled value></option>
@@ -60,7 +60,7 @@
               <label>Started Date</label>
 
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-update-started-date" name="startedDate" type="text" value="<%= userInfo.started_date || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
+                <input style="width: 10rem;" id="user-update-started-date" class="form-control" name="startedDate" type="text" value="<%= userInfo.started_date || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
               </div>
             </div>
 
@@ -68,7 +68,7 @@
               <label for="toDate">Position</label>
 
               <div class="d-flex flex-column">
-                <select style="width: 10rem;" id="user-add-position" name="position" <%= loginUser.position_id != 0 && "disabled"  %>>
+                <select style="width: 10rem;" id="user-add-position" class="form-control" name="position" <%= loginUser.position_id != 0 && "disabled"  %>>
                   <% if (positionId == -1) { %>
                   <option selected disabled value></option>
                   <% } %>
@@ -87,14 +87,14 @@
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
               <label for="password">Password</label>
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-add-password" name="password" type="password" value="<%= userInfo.password || ''  %>">
+                <input style="width: 10rem;" id="user-add-password" class="form-control" name="password" type="password" value="<%= userInfo.password || ''  %>">
               </div>
             </div>
 
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
               <label for="confPassword">Password Confirmation</label>
               <div class="d-flex flex-column">
-                <input style="width: 10rem;" id="user-add-confirm-password" name="confirmPassword" type="password" value="<%= userInfo.password || ''  %>">
+                <input style="width: 10rem;" id="user-add-confirm-password" class="form-control" name="confirmPassword" type="password" value="<%= userInfo.password || ''  %>">
               </div>
             </div>
           </div>
@@ -110,14 +110,14 @@
       <% } %>
 
       <% if(userInfo.id && loginUser.position_id == 0){ %>
-      <button style="width: 6rem;" id="submit-update" class="bg-white rounded ml-3" type="submit" onclick="submitUpdate()">Update</button>
+      <button style="width: 6rem;" id="submit-update" class="btn btn-primary rounded rounded ml-3" type="submit" onclick="submitUpdate()">Update</button>
       <% if(userInfo.id != loginUser.id ){ %>
-      <button style="width: 6rem;" class="bg-white rounded ml-3" type="button" data-toggle="modal" data-target="#delete-user-modal">Delete</button>
+      <button style="width: 6rem;" class="btn btn-danger rounded ml-3" type="button" data-toggle="modal" data-target="#delete-user-modal">Delete</button>
       <% } %>
       <% } %>
 
 
-      <button style="width: 6rem;" class="bg-white rounded ml-3" type="button" onclick="backToUserList()">Cancel</button>
+      <button style="width: 6rem;" class="btn btn-outline-dark rounded ml-3" type="button" onclick="backToUserList()">Cancel</button>
     </div>
   </div>
   </form>
