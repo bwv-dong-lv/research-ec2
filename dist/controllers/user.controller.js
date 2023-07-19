@@ -72,25 +72,6 @@ const searchUser = async (req, res, next) => {
     if (req.body.fromDate && req.body.toDate) {
         const date1 = (0, moment_1.default)(req.body.fromDate, 'DD/MM/YYYY');
         const date2 = (0, moment_1.default)(req.body.toDate, 'DD/MM/YYYY');
-        // if (!date1.isBefore(date2)) {
-        //   res.render('userList/index', {
-        //     layout: 'layout/defaultLayout',
-        //     pageTitle: 'User List',
-        //     usernameHeader: req.session.user?.name,
-        //     username: req.body.username,
-        //     loginUser: req.session.user,
-        //     userList: [],
-        //     fromDate: req.body.fromDate,
-        //     toDate: req.body.toDate,
-        //     pageArray: [],
-        //     currentPage: 1,
-        //     lastPage: 0,
-        //     totalRow: -1,
-        //     prev3dots: false,
-        //     next3dots: false,
-        //     flashMessage: messages.EBT044(),
-        //   });
-        // }
         if (!date2.isAfter(date1) && !date1.isSame(date2)) {
             res.render('userList/index', {
                 layout: 'layout/defaultLayout',
@@ -113,6 +94,11 @@ const searchUser = async (req, res, next) => {
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+    if (req.body.usernameOrigin != req.body.username ||
+        req.body.fromDateOrigin != req.body.fromDate ||
+        req.body.toDateOrigin != req.body.toDate) {
+        req.body.page = 1;
+    }
     const userListData = await userRepository.findUsers(req.body.username, req.body.fromDate && convertDateFormat(req.body.fromDate), req.body.toDate && convertDateFormat(req.body.toDate), req.body.page);
     const groupList = await groupRepository.getAllGroup();
     userListData.data.forEach((user) => {
@@ -121,7 +107,7 @@ const searchUser = async (req, res, next) => {
         user.group_name = group ? group.name : '';
         user.started_date_display = (0, moment_1.default)(user.started_date)
             .add(1, 'day')
-            .format('YYYY/MM/DD');
+            .format('DD/MM/YYYY');
     });
     req.session.search = {
         username: req.body.username || '',

@@ -9,6 +9,11 @@
     <% } %>
 
     <form id="user-list-search-form" action="/user" method="POST" name="user-list-search-form">
+      <input class="d-none" name="usernameOrigin" value="<%= username  %>">
+      <input class="d-none" name="fromDateOrigin" value="<%= fromDate  %>">
+      <input class="d-none" name="toDateOrigin" value="<%= toDate  %>">
+
+
       <div class="d-flex justify-content-start mt-4">
         <div class="d-flex flex-column justify-content-between">
           <div style="width: 18.5rem;" class="d-flex justify-content-between">
@@ -39,7 +44,7 @@
 
       <div style="width: 35%;" class="mt-5">
         <div class="d-flex justify-content-end mt-3">
-          <button style="width: 6rem;" class="rounded btn btn-outline-dark" onClick="window.location.href='/user';" type="reset">Clear</button>
+          <button style="width: 6rem;" class="rounded btn btn-outline-dark" type="button" onclick="clearSearch()">Clear</button>
           <button style="width: 6rem;" class="btn btn-primary rounded ml-3" type="submit">Search</button>
         </div>
       </div>
@@ -106,7 +111,7 @@
               <%= user.name %>
               <% } %>
             </td>
-            <td style="text-decoration: underline;"><%= user.email %></td>
+            <td><%= user.email %></td>
             <td><%= user.group_name %></td>
             <td>
               <div style="margin-left: 40%;">
@@ -115,19 +120,19 @@
             </td>
             <td>
               <% if(user.position_id === 0){ %>
-              General Director
+              Director
               <% } %>
 
               <% if(user.position_id === 1){ %>
-              Department Leader
+              Group Leader
               <% } %>
 
               <% if(user.position_id === 2){ %>
-              Team Leader
+              Leader
               <% } %>
 
               <% if(user.position_id === 3){ %>
-              Team Member
+              Member
               <% } %>
             </td>
           </tr>

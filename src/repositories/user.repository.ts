@@ -50,6 +50,14 @@ export class UserRepository extends Repository<User> {
     });
   };
 
+  getUsersByEmail = async (userEmail: string) => {
+    return await this.find({
+      where: {
+        email: userEmail,
+      },
+    });
+  };
+
   getUserById = async (userId: number) => {
     return await this.findOne({id: userId});
   };
