@@ -38,6 +38,13 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
                 },
             });
         };
+        this.getUsersByEmail = async (userEmail) => {
+            return await this.find({
+                where: {
+                    email: userEmail,
+                },
+            });
+        };
         this.getUserById = async (userId) => {
             return await this.findOne({ id: userId });
         };
