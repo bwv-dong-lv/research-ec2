@@ -28,12 +28,26 @@ function exportCSV() {
 $(document).ready(function() {
   $('#user-list-from-date').datepicker({
     dateFormat: 'dd/mm/yy',
+    onselect: function(dateText, inst) {
+      $(this).valid();
+      $('#user-list-search-form').validate();
+      $('#user-list-search-form')
+        .validate()
+        .element('#user-list-from-date');
+    },
   });
 });
 
 $(document).ready(function() {
   $('#user-list-to-date').datepicker({
     dateFormat: 'dd/mm/yy',
+    onselect: function(dateText, inst) {
+      $(this).valid();
+      $('#user-list-search-form').validate();
+      $('#user-list-search-form')
+        .validate()
+        .element('#user-list-to-date');
+    },
   });
 });
 
@@ -41,6 +55,20 @@ function toDateObject(dateString) {
   const dateParts = dateString.split('/');
   return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
 }
+
+$('#user-list-from-date').change(function() {
+  $(this).validate();
+  $('#user-list-search-form')
+    .validate()
+    .element('#user-list-from-date');
+});
+
+$('#user-list-to-date').change(function() {
+  $(this).validate();
+  $('#user-list-search-form')
+    .validate()
+    .element('#user-list-to-date');
+});
 
 // Custom validation method
 $.validator.addMethod(
@@ -51,6 +79,20 @@ $.validator.addMethod(
       const fromDate = toDateObject(fromField.val());
       const toDate = toDateObject(value);
       return toDate <= fromDate;
+    }
+    return true;
+  },
+  '解約予定日は契約終了日前を指定してください。',
+);
+
+$.validator.addMethod(
+  'dateMoreThan',
+  function(value, element, params) {
+    const fromField = $(params);
+    if (!this.optional(element) && !this.optional(fromField[0])) {
+      const fromDate = toDateObject(fromField.val());
+      const toDate = toDateObject(value);
+      return toDate >= fromDate;
     }
     return true;
   },
@@ -92,6 +134,7 @@ $(document).ready(function() {
         validDay: true,
       },
       toDate: {
+        dateMoreThan: '#user-list-from-date',
         validDay: true,
       },
     },
