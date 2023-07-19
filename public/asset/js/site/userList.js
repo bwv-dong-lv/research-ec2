@@ -148,3 +148,7 @@ $(document).ready(function() {
     },
   });
 });
+
+function clearSearch() {
+  $('#user-list-search-form input[type="text"]').val('');
+}
