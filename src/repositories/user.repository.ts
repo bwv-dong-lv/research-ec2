@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import {User} from '../entities/user.entity';
 import user from '../middlewares/user';
+import {isNull} from 'lodash';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -41,7 +42,12 @@ export class UserRepository extends Repository<User> {
   // };
 
   getUserByEmail = async (userEmail: string) => {
-    return await this.findOne({email: userEmail});
+    return await this.findOne({
+      where: {
+        email: userEmail,
+        deleted_date: IsNull(),
+      },
+    });
   };
 
   getUserById = async (userId: number) => {

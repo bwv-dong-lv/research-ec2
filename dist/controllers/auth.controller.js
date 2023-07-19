@@ -31,6 +31,7 @@ const login = async (req, res, next) => {
         const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
         const { email, password } = req.body;
         const user = await userRepository.getUserByEmail(req.body.email);
+        console.log('user: ', user);
         if (user && (await (0, bcrypt_1.comparePassword)(req.body.password, user.password))) {
             req.session.user = user;
             res.redirect('/user');
