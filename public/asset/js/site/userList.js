@@ -41,6 +41,7 @@ function toDateObject(dateString) {
   const dateParts = dateString.split('/');
   return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
 }
+
 // Custom validation method
 $.validator.addMethod(
   'dateLessThan',
@@ -56,16 +57,51 @@ $.validator.addMethod(
   '解約予定日は契約終了日前を指定してください。',
 );
 
+$.validator.addMethod(
+  'validDay',
+  function(value, element) {
+    // Split the input value into day, month, and year
+    const parts = value.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    // Create a new Date object
+    const date = new Date(year, month - 1, day);
+
+    // Check if the date is valid
+    if (
+      date.getDate() === day &&
+      date.getMonth() === month - 1 &&
+      date.getFullYear() === year
+    ) {
+      return true; // Valid
+    }
+
+    return this.optional(element) || false; // Invalid
+  },
+  'Please enter a valid date.',
+);
+
 // Initialize the validation
 $(document).ready(function() {
   $('#user-list-search-form').validate({
     rules: {
       fromDate: {
         dateLessThan: '#user-list-to-date',
+        validDay: true,
+      },
+      toDate: {
+        validDay: true,
       },
     },
     messages: {
-      fromDate: {},
+      fromDate: {
+        validDay: 'Started Date Fromは日付を正しく入力してください。',
+      },
+      toDate: {
+        validDay: 'Started Date Toは日付を正しく入力してください。',
+      },
     },
   });
 });
