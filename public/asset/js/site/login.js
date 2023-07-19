@@ -1,32 +1,31 @@
+$.validator.addMethod(
+  'customEmail',
+  function(value, element) {
+    // Regular expression pattern for email format with dot in the head and two dots allowed
+    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+    return this.optional(element) || pattern.test(value);
+  },
+  'Please enter a valid email address.',
+);
+
 $('#login-form').validate({
   rules: {
     email: {
       required: true,
-      email: true,
-      // maxlength: 255,
+      customEmail: true,
     },
     password: {
       required: true,
-      // maxlength: 20,
     },
   },
 
   messages: {
     email: {
       required: 'Email は必須です。',
-      email: 'メールアドレスを正しく入力してください。',
-      // maxlength: function(params, element) {
-      //   const valueLength = $('#login-email').val().length;
-      //   return `Emailは「${params}」文字以下で入力してください。（現在${valueLength}文字)`;
-      // },
+      customEmail: 'メールアドレスを正しく入力してください。',
     },
     password: {
       required: 'Password は必須です。',
-
-      // maxlength: function(params, element) {
-      //   const valueLength = $('#login-password').val().length;
-      //   return `Passwordは「${params}」文字以下で入力してください。（現在${valueLength}文字)`;
-      // },
     },
   },
 
