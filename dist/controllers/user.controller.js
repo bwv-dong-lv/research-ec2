@@ -107,7 +107,7 @@ const searchUser = async (req, res, next) => {
         user.group_name = group ? group.name : '';
         user.started_date_display = (0, moment_1.default)(user.started_date)
             .add(1, 'day')
-            .format('YYYY/MM/DD');
+            .format('DD/MM/YYYY');
     });
     req.session.search = {
         username: req.body.username || '',
