@@ -43,14 +43,6 @@ const login = async (req, res, next) => {
             };
             req.session.flashMessage = constants_1.messages.EBT016();
             res.redirect('/login');
-            // res.render('login/index', {
-            //   layout: 'layout/loginLayout',
-            //   form: {
-            //     email: email,
-            //     password: password,
-            //   },
-            //   flashMessage: messages.EBT016(),
-            // });
         }
     }
     catch (err) {

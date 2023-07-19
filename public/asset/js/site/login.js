@@ -21,11 +21,11 @@ $('#login-form').validate({
 
   messages: {
     email: {
-      required: 'Email は必須です。',
+      required: 'Emailは必須です。',
       customEmail: 'メールアドレスを正しく入力してください。',
     },
     password: {
-      required: 'Password は必須です。',
+      required: 'Passwordは必須です。',
     },
   },
 
