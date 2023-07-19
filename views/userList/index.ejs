@@ -9,6 +9,11 @@
     <% } %>
 
     <form id="user-list-search-form" action="/user" method="POST" name="user-list-search-form">
+      <input class="d-none" name="usernameOrigin" value="<%= username  %>">
+      <input class="d-none" name="fromDateOrigin" value="<%= fromDate  %>">
+      <input class="d-none" name="toDateOrigin" value="<%= toDate  %>">
+
+
       <div class="d-flex justify-content-start mt-4">
         <div class="d-flex flex-column justify-content-between">
           <div style="width: 18.5rem;" class="d-flex justify-content-between">

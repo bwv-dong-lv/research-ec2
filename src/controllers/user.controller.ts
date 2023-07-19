@@ -93,25 +93,6 @@ export const searchUser = async (
     const date1 = moment(req.body.fromDate, 'DD/MM/YYYY');
     const date2 = moment(req.body.toDate, 'DD/MM/YYYY');
 
-    // if (!date1.isBefore(date2)) {
-    //   res.render('userList/index', {
-    //     layout: 'layout/defaultLayout',
-    //     pageTitle: 'User List',
-    //     usernameHeader: req.session.user?.name,
-    //     username: req.body.username,
-    //     loginUser: req.session.user,
-    //     userList: [],
-    //     fromDate: req.body.fromDate,
-    //     toDate: req.body.toDate,
-    //     pageArray: [],
-    //     currentPage: 1,
-    //     lastPage: 0,
-    //     totalRow: -1,
-    //     prev3dots: false,
-    //     next3dots: false,
-    //     flashMessage: messages.EBT044(),
-    //   });
-    // }
     if (!date2.isAfter(date1) && !date1.isSame(date2)) {
       res.render('userList/index', {
         layout: 'layout/defaultLayout',
@@ -136,6 +117,13 @@ export const searchUser = async (
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
 
+  if (
+    req.body.usernameOrigin != req.body.username ||
+    req.body.fromDateOrigin != req.body.fromDate ||
+    req.body.toDateOrigin != req.body.toDate
+  ) {
+    req.body.page = 1;
+  }
   const userListData = await userRepository.findUsers(
     req.body.username,
     req.body.fromDate && convertDateFormat(req.body.fromDate),
