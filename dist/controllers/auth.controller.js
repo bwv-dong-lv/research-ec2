@@ -9,13 +9,17 @@ const bcrypt_1 = require("../utils/bcrypt");
  * GET login
  */
 const renderLogin = async (req, res, next) => {
+    var _a, _b;
+    const tempSession = Object.assign({}, req.session);
+    req.session.flashMessage = '';
+    req.session.loginInfo = '';
     res.render('login/index', {
         layout: 'layout/loginLayout',
         form: {
-            email: '',
-            password: '',
+            email: ((_a = tempSession.loginInfo) === null || _a === void 0 ? void 0 : _a.email) || '',
+            password: ((_b = tempSession.loginInfo) === null || _b === void 0 ? void 0 : _b.password) || '',
         },
-        flashMessage: '',
+        flashMessage: tempSession.flashMessage || '',
     });
 };
 exports.renderLogin = renderLogin;
@@ -32,14 +36,21 @@ const login = async (req, res, next) => {
             res.redirect('/user');
         }
         else {
-            res.render('login/index', {
-                layout: 'layout/loginLayout',
-                form: {
-                    email: email,
-                    password: password,
-                },
-                flashMessage: constants_1.messages.EBT016(),
-            });
+            req.session.loginInfo = {};
+            req.session.loginInfo = {
+                email: email,
+                password: password,
+            };
+            req.session.flashMessage = constants_1.messages.EBT016();
+            res.redirect('/login');
+            // res.render('login/index', {
+            //   layout: 'layout/loginLayout',
+            //   form: {
+            //     email: email,
+            //     password: password,
+            //   },
+            //   flashMessage: messages.EBT016(),
+            // });
         }
     }
     catch (err) {

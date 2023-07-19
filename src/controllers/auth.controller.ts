@@ -20,13 +20,17 @@ export const renderLogin = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const tempSession = {...req.session};
+  req.session.flashMessage = '';
+  req.session.loginInfo = '';
+
   res.render('login/index', {
     layout: 'layout/loginLayout',
     form: {
-      email: '',
-      password: '',
+      email: tempSession.loginInfo?.email || '',
+      password: tempSession.loginInfo?.password || '',
     },
-    flashMessage: '',
+    flashMessage: tempSession.flashMessage || '',
   });
 };
 
@@ -48,14 +52,16 @@ export const login = async (
       req.session.user = user;
       res.redirect('/user');
     } else {
-      res.render('login/index', {
-        layout: 'layout/loginLayout',
-        form: {
-          email: email,
-          password: password,
-        },
-        flashMessage: messages.EBT016(),
-      });
+      req.session.loginInfo = {};
+
+      req.session.loginInfo = {
+        email: email,
+        password: password,
+      };
+
+      req.session.flashMessage = messages.EBT016();
+
+      res.redirect('/login');
     }
   } catch (err) {
     next(err);
