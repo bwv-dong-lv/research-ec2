@@ -22,6 +22,7 @@ declare module 'express-session' {
     updateUserInfo: any;
     groupPage: any;
     loginInfo: any;
+    searchInfo: any;
   }
 }
 
