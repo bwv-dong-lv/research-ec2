@@ -28,37 +28,6 @@ dayjs.extend(tz);
 /**
  * GET user list
  */
-export const renderUserList = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (!req.session.user) {
-    res.redirect('/login');
-  }
-  const tempSession = {...req.session};
-
-  req.session.flashMessage = '';
-
-  res.render('userList/index', {
-    layout: 'layout/defaultLayout',
-    pageTitle: 'User List',
-    usernameHeader: req.session.user?.name,
-    username: '',
-    loginUser: req.session.user,
-    userList: [],
-    fromDate: '',
-    toDate: '',
-    pageArray: [],
-    currentPage: 1,
-    lastPage: 0,
-    totalRow: -1,
-    prev3dots: false,
-    next3dots: false,
-    flashMessage: tempSession.flashMessage || '',
-  });
-};
-
 function convertDateFormat(dateString: any) {
   const parts = dateString.split('/');
   const day = parts[0];
@@ -77,6 +46,105 @@ function convertDateFormat(dateString: any) {
   return convertedYear + '-' + convertedMonth + '-' + convertedDay;
 }
 
+export const renderUserList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+  const tempSession = {...req.session};
+
+  req.session.flashMessage = '';
+  req.session.searchInfo = '';
+
+  if (tempSession.searchInfo === undefined || tempSession.searchInfo === '') {
+    res.render('userList/index', {
+      layout: 'layout/defaultLayout',
+      pageTitle: 'User List',
+      usernameHeader: req.session.user?.name,
+      username: '',
+      loginUser: req.session.user,
+      userList: [],
+      fromDate: '',
+      toDate: '',
+      pageArray: [],
+      currentPage: 1,
+      lastPage: 0,
+      totalRow: -1,
+      prev3dots: false,
+      next3dots: false,
+      flashMessage: tempSession.flashMessage || '',
+    });
+  } else {
+    const userRepository = getCustomRepository(UserRepository);
+    const groupRepository = getCustomRepository(GroupRepository);
+
+    const userListData = await userRepository.findUsers(
+      tempSession.searchInfo.username,
+      tempSession.searchInfo.fromDate &&
+        convertDateFormat(tempSession.searchInfo.fromDate),
+      tempSession.searchInfo.toDate &&
+        convertDateFormat(tempSession.searchInfo.toDate),
+      tempSession.searchInfo.page,
+    );
+
+    const groupList = await groupRepository.getAllGroup();
+
+    userListData.data.forEach((user: any) => {
+      user.position_name = UserRole[Number(user.position_id)];
+
+      const group = groupList.find(group => group.id == user.group_id);
+      user.group_name = group ? group.name : '';
+      user.started_date_display = moment(user.started_date)
+        .add(1, 'day')
+        .format('DD/MM/YYYY');
+    });
+
+    const totalPage = Math.ceil(userListData.count / 10);
+    let pageArray: any = [];
+
+    if (totalPage < 6) {
+      pageArray = _.range(1, totalPage + 1);
+    } else {
+      if (Number(tempSession.searchInfo.page) < 5) {
+        pageArray = _.range(1, 6);
+      }
+      if (Number(tempSession.searchInfo.page) >= 5) {
+        if (Number(tempSession.searchInfo.page <= totalPage - 4)) {
+          pageArray = _.range(
+            Number(tempSession.searchInfo.page),
+            Number(tempSession.searchInfo.page) + 5,
+          );
+        } else {
+          pageArray = _.range(Number(totalPage - 4), totalPage + 1);
+        }
+      }
+    }
+
+    const fullPageArray = _.range(1, totalPage + 1);
+
+    res.render('userList/index', {
+      layout: 'layout/defaultLayout',
+      pageTitle: 'User List',
+      usernameHeader: req.session.user?.name,
+      username: tempSession.searchInfo.username,
+      loginUser: req.session.user,
+      userList: userListData.data,
+      fromDate: tempSession.searchInfo.fromDate,
+      toDate: tempSession.searchInfo.toDate,
+      pageArray: pageArray,
+      currentPage: tempSession.searchInfo.page,
+      lastPage: fullPageArray.at(-1),
+      totalRow: userListData.count,
+      prev3dots: pageArray[0] > 1,
+      next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
+      flashMessage: '',
+    });
+  }
+};
+
 /**
  * POST user list
  */
@@ -89,103 +157,22 @@ export const searchUser = async (
     res.redirect('/login');
   }
 
-  if (req.body.fromDate && req.body.toDate) {
-    const date1 = moment(req.body.fromDate, 'DD/MM/YYYY');
-    const date2 = moment(req.body.toDate, 'DD/MM/YYYY');
-
-    if (!date2.isAfter(date1) && !date1.isSame(date2)) {
-      res.render('userList/index', {
-        layout: 'layout/defaultLayout',
-        pageTitle: 'User List',
-        usernameHeader: req.session.user?.name,
-        username: req.body.username,
-        loginUser: req.session.user,
-        userList: [],
-        fromDate: req.body.fromDate,
-        toDate: req.body.toDate,
-        pageArray: [],
-        currentPage: 1,
-        lastPage: 0,
-        totalRow: -1,
-        prev3dots: false,
-        next3dots: false,
-        flashMessage: messages.EBT044(),
-      });
-    }
-  }
-
-  const userRepository = getCustomRepository(UserRepository);
-  const groupRepository = getCustomRepository(GroupRepository);
+  req.session.searchInfo = {
+    username: req.body.username,
+    fromDate: req.body.fromDate,
+    toDate: req.body.toDate,
+    page: req.body.page,
+  };
 
   if (
     req.body.usernameOrigin != req.body.username ||
     req.body.fromDateOrigin != req.body.fromDate ||
     req.body.toDateOrigin != req.body.toDate
   ) {
-    req.body.page = 1;
-  }
-  const userListData = await userRepository.findUsers(
-    req.body.username,
-    req.body.fromDate && convertDateFormat(req.body.fromDate),
-    req.body.toDate && convertDateFormat(req.body.toDate),
-    req.body.page,
-  );
-
-  const groupList = await groupRepository.getAllGroup();
-
-  userListData.data.forEach((user: any) => {
-    user.position_name = UserRole[Number(user.position_id)];
-
-    const group = groupList.find(group => group.id == user.group_id);
-    user.group_name = group ? group.name : '';
-    user.started_date_display = moment(user.started_date)
-      .add(1, 'day')
-      .format('DD/MM/YYYY');
-  });
-
-  req.session.search = {
-    username: req.body.username || '',
-    fromDate: req.body.fromDate || '',
-    toDate: req.body.toDate || '',
-  };
-
-  const totalPage = Math.ceil(userListData.count / 10);
-  let pageArray: any = [];
-
-  if (totalPage < 6) {
-    pageArray = _.range(1, totalPage + 1);
-  } else {
-    if (Number(req.body.page) < 5) {
-      pageArray = _.range(1, 6);
-    }
-    if (Number(req.body.page) >= 5) {
-      if (Number(req.body.page <= totalPage - 4)) {
-        pageArray = _.range(Number(req.body.page), Number(req.body.page) + 5);
-      } else {
-        pageArray = _.range(Number(totalPage - 4), totalPage + 1);
-      }
-    }
+    req.session.searchInfo.page = 1;
   }
 
-  const fullPageArray = _.range(1, totalPage + 1);
-
-  res.render('userList/index', {
-    layout: 'layout/defaultLayout',
-    pageTitle: 'User List',
-    usernameHeader: req.session.user?.name,
-    username: req.body.username,
-    loginUser: req.session.user,
-    userList: userListData.data,
-    fromDate: req.body.fromDate,
-    toDate: req.body.toDate,
-    pageArray: pageArray,
-    currentPage: req.body.page,
-    lastPage: fullPageArray.at(-1),
-    totalRow: userListData.count,
-    prev3dots: pageArray[0] > 1,
-    next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
-    flashMessage: '',
-  });
+  res.redirect('/user');
 };
 
 function getCurrentDateTimeString() {
