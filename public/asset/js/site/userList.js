@@ -61,6 +61,11 @@ $('#user-list-from-date').change(function() {
   $('#user-list-search-form')
     .validate()
     .element('#user-list-from-date');
+  if (!$('#user-list-search-form').valid()) {
+    $('#user-list-search-form')
+      .validate()
+      .element('#user-list-to-date');
+  }
 });
 
 $('#user-list-to-date').change(function() {
@@ -68,6 +73,11 @@ $('#user-list-to-date').change(function() {
   $('#user-list-search-form')
     .validate()
     .element('#user-list-to-date');
+  if (!$('#user-list-search-form').valid()) {
+    $('#user-list-search-form')
+      .validate()
+      .element('#user-list-from-date');
+  }
 });
 
 // Custom validation method
