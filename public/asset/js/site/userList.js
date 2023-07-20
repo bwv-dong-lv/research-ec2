@@ -146,6 +146,7 @@ $(document).ready(function() {
         validDay: 'Started Date Toは日付を正しく入力してください。',
       },
     },
+    onkeyup: false,
   });
 });
 
