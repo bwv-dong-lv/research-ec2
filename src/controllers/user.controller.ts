@@ -307,7 +307,7 @@ export const renderUserAddEditDelete = async (
 
       res.render('userEditDelete/index', {
         layout: 'layout/defaultLayout',
-        pageTitle: 'UserAddEditDelete',
+        pageTitle: 'User Update Delete',
         userInfo: userInfo,
         groupId: group?.id || -1,
         groupList: groupList,
@@ -322,7 +322,7 @@ export const renderUserAddEditDelete = async (
     //add user
     res.render('userAdd/index', {
       layout: 'layout/defaultLayout',
-      pageTitle: 'UserAddEditDelete',
+      pageTitle: 'User Add',
       userInfo: tempSession.addUserInfo || '',
       groupId: tempSession.addUserInfo?.groupId || -1,
       groupList: groupList,

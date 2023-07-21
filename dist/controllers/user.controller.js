@@ -228,7 +228,7 @@ const renderUserAddEditDelete = async (req, res, next) => {
             req.session.updateUserInfo = '';
             res.render('userEditDelete/index', {
                 layout: 'layout/defaultLayout',
-                pageTitle: 'UserAddEditDelete',
+                pageTitle: 'User Update Delete',
                 userInfo: userInfo,
                 groupId: (group === null || group === void 0 ? void 0 : group.id) || -1,
                 groupList: groupList,
@@ -243,7 +243,7 @@ const renderUserAddEditDelete = async (req, res, next) => {
         //add user
         res.render('userAdd/index', {
             layout: 'layout/defaultLayout',
-            pageTitle: 'UserAddEditDelete',
+            pageTitle: 'User Add',
             userInfo: tempSession.addUserInfo || '',
             groupId: ((_c = tempSession.addUserInfo) === null || _c === void 0 ? void 0 : _c.groupId) || -1,
             groupList: groupList,
