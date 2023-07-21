@@ -14,7 +14,7 @@
       <div class="d-flex justify-content-start mt-4">
         <div class="d-flex flex-column justify-content-between">
           <div class="d-flex justify-content-between">
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center mr-5">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-center mr-5">
               <input style="display: none;" name="userId" value="<%= userInfo.id || "" %>" />
               <label for="toDate"><%= userInfo.id ? "ID" : "" %></label>
               <div class="d-flex flex-column">
@@ -22,7 +22,7 @@
               </div>
             </div>
 
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start">
               <label for="toDate">User Name</label>
               <div class="d-flex flex-column">
                 <input style="width: 10rem;" id="user-add-name" class="form-control" name="username" type="text" value="<%= userInfo.name || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
@@ -31,14 +31,14 @@
           </div>
 
           <div class="d-flex justify-content-between mt-4">
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start mr-5">
               <label>Email</label>
               <div class="d-flex flex-column">
                 <input style="width: 10rem;" id="user-add-email" class="form-control" name="email" type="text" value="<%= userInfo.email || ""  %>" <%= loginUser.position_id != 0 && "disabled"  %>>
               </div>
             </div>
 
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start">
               <label>Group</label>
 
               <div class="d-flex flex-column">
@@ -59,7 +59,7 @@
           </div>
 
           <div class="d-flex justify-content-between mt-4">
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start mr-5">
               <label>Started Date</label>
 
               <div class="d-flex flex-column">
@@ -67,7 +67,7 @@
               </div>
             </div>
 
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start">
               <label for="toDate">Position</label>
 
               <div class="d-flex flex-column">
@@ -87,14 +87,14 @@
 
           <% if(loginUser.position_id == 0){ %>
           <div class="d-flex justify-content-between mt-4">
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start mr-5">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start mr-5">
               <label for="password">Password</label>
               <div class="d-flex flex-column">
                 <input style="width: 10rem;" id="user-add-password" class="form-control" name="password" type="password" value="<%= userInfo.password || ''  %>">
               </div>
             </div>
 
-            <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
+            <div style="width: 18.5rem; height: 4.6rem" class="d-flex justify-content-between align-items-start">
               <label for="confPassword">Password Confirmation</label>
               <div class="d-flex flex-column">
                 <input style="width: 10rem;" id="user-add-confirm-password" class="form-control" name="confirmPassword" type="password" value="<%= userInfo.password || ''  %>">
