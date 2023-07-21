@@ -123,6 +123,13 @@ $('#user-add-form').validate({
     },
     confirmPassword: {
       equalTo: '#user-add-password',
+      required: function(element) {
+        return (
+          $('#user-add-password')
+            .val()
+            .trim() !== ''
+        );
+      },
       // oneByteCharacter: true,
     },
   },
@@ -163,6 +170,7 @@ $('#user-add-form').validate({
     },
     confirmPassword: {
       equalTo: '確認用のパスワードが間違っています。',
+      required: 'Password Confirmationは必須です。',
       oneByteCharacter: 'User Nameは半角英数で入力してください',
     },
   },
