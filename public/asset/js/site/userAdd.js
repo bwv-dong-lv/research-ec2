@@ -197,3 +197,45 @@ document.getElementById('user-add-form').addEventListener('submit', function() {
     document.getElementById('submit-register').disabled = true;
   }
 });
+
+$('#user-add-email').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-email');
+});
+
+$('#user-add-name').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-name');
+});
+
+$('#user-add-group').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-group');
+});
+
+$('#user-add-started-date').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-started-date');
+});
+
+$('#user-add-position').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-position');
+});
+
+$('#user-add-password').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-password');
+});
+
+$('#user-add-confirm-password').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-confirm-password');
+});
