@@ -35,7 +35,7 @@ $.validator.addMethod(
   'customEmail',
   function(value, element) {
     // Regular expression pattern for email format with dot in the head and two dots allowed
-    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
     return this.optional(element) || pattern.test(value);
   },
   'Please enter a valid email address.',
@@ -196,4 +196,46 @@ document.getElementById('user-add-form').addEventListener('submit', function() {
   if ($('#user-add-form').valid()) {
     document.getElementById('submit-register').disabled = true;
   }
+});
+
+$('#user-add-email').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-email');
+});
+
+$('#user-add-name').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-name');
+});
+
+$('#user-add-group').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-group');
+});
+
+$('#user-add-started-date').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-started-date');
+});
+
+$('#user-add-position').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-position');
+});
+
+$('#user-add-password').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-password');
+});
+
+$('#user-add-confirm-password').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-confirm-password');
 });

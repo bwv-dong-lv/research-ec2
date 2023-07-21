@@ -48,7 +48,7 @@ $.validator.addMethod(
   'customEmail',
   function(value, element) {
     // Regular expression pattern for email format with dot in the head and two dots allowed
-    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
     return this.optional(element) || pattern.test(value);
   },
   'Please enter a valid email address.',
@@ -123,6 +123,13 @@ $('#user-add-form').validate({
     },
     confirmPassword: {
       equalTo: '#user-add-password',
+      required: function(element) {
+        return (
+          $('#user-add-password')
+            .val()
+            .trim() !== ''
+        );
+      },
       // oneByteCharacter: true,
     },
   },
@@ -163,6 +170,7 @@ $('#user-add-form').validate({
     },
     confirmPassword: {
       equalTo: '確認用のパスワードが間違っています。',
+      required: 'Password Confirmationは必須です。',
       oneByteCharacter: 'User Nameは半角英数で入力してください',
     },
   },
