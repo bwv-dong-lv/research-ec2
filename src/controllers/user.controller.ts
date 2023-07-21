@@ -333,6 +333,15 @@ export const renderUserAddEditDelete = async (
   }
 };
 
+function stringToDate(inputString: string) {
+  const dateParts = inputString.split('/');
+  const day = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10) - 1; // Subtract 1 to convert to zero-based month
+  const year = parseInt(dateParts[2], 10);
+
+  return new Date(year, month, day);
+}
+
 export const addUser = async (
   req: Request,
   res: Response,
@@ -367,7 +376,8 @@ export const addUser = async (
       password: await hashPassword(req.body.password),
       name: req.body.username,
       group_id: Number(req.body.group),
-      started_date: new Date(req.body.startedDate),
+      // started_date: new Date(req.body.startedDate),
+      started_date: stringToDate(req.body.startedDate),
       position_id: req.body.position,
       created_date: new Date(),
       updated_date: new Date(),
