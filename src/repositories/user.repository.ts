@@ -33,6 +33,15 @@ export class UserRepository extends Repository<User> {
     });
   };
 
+  checkUserExist = async (userId: number) => {
+    return await this.findOne({
+      where: {
+        id: userId,
+        deleted_date: IsNull(),
+      },
+    });
+  };
+
   // deleteUserById = async (userId: number, adminId: number, date: Date) => {
   //   return await this.update(userId, {
   //     del_flg: 1,

@@ -353,6 +353,17 @@ export const addUser = async (
 
   const userRepository = getCustomRepository(UserRepository);
 
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
   if (await userRepository.getUserByEmail(req.body.email)) {
     // error email address is registed
     req.session.addUserInfo = {};
@@ -438,9 +449,62 @@ export const updateUser = async (
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
 
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
   const groupList = await groupRepository.getAllGroup();
 
   const userUpdate = await userRepository.getUserById(Number(req.body.userId));
+
+  if (req.session.user?.id == req.body.userId) {
+    const user: Partial<User> = {
+      password: req.body.password
+        ? await hashPassword(req.body.password)
+        : undefined,
+    };
+    try {
+      await userRepository.updateUser(Number(req.body.userId), user);
+
+      req.session.updateUserInfo = {};
+
+      req.session.updateUserInfo = {
+        id: req.body.id,
+        email: req.body.email,
+        name: req.body.username,
+        password: '',
+        started_date: req.body.startedDate,
+        groupId: req.body.group,
+        positionId: req.body.position,
+      };
+
+      req.session.flashMessage = messages.EBT096();
+      res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      return;
+    } catch (error) {
+      req.session.updateUserInfo = {};
+
+      req.session.updateUserInfo = {
+        id: req.body.id,
+        email: req.body.email,
+        name: req.body.username,
+        password: req.body.password,
+        started_date: req.body.startedDate,
+        groupId: req.body.group,
+        positionId: req.body.position,
+      };
+
+      req.session.flashMessage = messages.EBT093();
+      res.redirect(`/user/crud/${Number(req.body.userId)}`);
+    }
+  }
 
   if (userUpdate) {
     if (await isSelfEmail(req.body.email, userUpdate?.email)) {
@@ -585,6 +649,17 @@ export const deleteUser = async (
   const groupRepository = getCustomRepository(GroupRepository);
 
   const groupList = await groupRepository.getAllGroup();
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
 
   try {
     await userRepository.deleteUserById(Number(req.body.userId), new Date());

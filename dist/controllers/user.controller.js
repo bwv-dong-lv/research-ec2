@@ -262,10 +262,19 @@ function stringToDate(inputString) {
     return new Date(year, month, day);
 }
 const addUser = async (req, res, next) => {
+    var _a;
     if (!req.session.user) {
         res.redirect('/login');
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
+    if ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) {
+        const loginUser = await userRepository.getUserById(Number(req.session.user.id));
+        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
+            req.session.destroy(function () { });
+            res.redirect('/login');
+            return;
+        }
+    }
     if (await userRepository.getUserByEmail(req.body.email)) {
         // error email address is registed
         req.session.addUserInfo = {};
@@ -333,13 +342,59 @@ const canEmailUpdate = async (email) => {
 };
 exports.canEmailUpdate = canEmailUpdate;
 const updateUser = async (req, res, next) => {
+    var _a, _b;
     if (!req.session.user) {
         res.redirect('/login');
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+    if ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) {
+        const loginUser = await userRepository.getUserById(Number(req.session.user.id));
+        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
+            req.session.destroy(function () { });
+            res.redirect('/login');
+            return;
+        }
+    }
     const groupList = await groupRepository.getAllGroup();
     const userUpdate = await userRepository.getUserById(Number(req.body.userId));
+    if (((_b = req.session.user) === null || _b === void 0 ? void 0 : _b.id) == req.body.userId) {
+        const user = {
+            password: req.body.password
+                ? await (0, bcrypt_1.hashPassword)(req.body.password)
+                : undefined,
+        };
+        try {
+            await userRepository.updateUser(Number(req.body.userId), user);
+            req.session.updateUserInfo = {};
+            req.session.updateUserInfo = {
+                id: req.body.id,
+                email: req.body.email,
+                name: req.body.username,
+                password: '',
+                started_date: req.body.startedDate,
+                groupId: req.body.group,
+                positionId: req.body.position,
+            };
+            req.session.flashMessage = constants_1.messages.EBT096();
+            res.redirect(`/user/crud/${Number(req.body.userId)}`);
+            return;
+        }
+        catch (error) {
+            req.session.updateUserInfo = {};
+            req.session.updateUserInfo = {
+                id: req.body.id,
+                email: req.body.email,
+                name: req.body.username,
+                password: req.body.password,
+                started_date: req.body.startedDate,
+                groupId: req.body.group,
+                positionId: req.body.position,
+            };
+            req.session.flashMessage = constants_1.messages.EBT093();
+            res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        }
+    }
     if (userUpdate) {
         if (await (0, exports.isSelfEmail)(req.body.email, userUpdate === null || userUpdate === void 0 ? void 0 : userUpdate.email)) {
             // update giu nguyen email
@@ -459,12 +514,21 @@ const updateUser = async (req, res, next) => {
 };
 exports.updateUser = updateUser;
 const deleteUser = async (req, res, next) => {
+    var _a;
     if (!req.session.user) {
         res.redirect('/login');
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
     const groupList = await groupRepository.getAllGroup();
+    if ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) {
+        const loginUser = await userRepository.getUserById(Number(req.session.user.id));
+        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
+            req.session.destroy(function () { });
+            res.redirect('/login');
+            return;
+        }
+    }
     try {
         await userRepository.deleteUserById(Number(req.body.userId), new Date());
         // res.render('userList/index', {

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkAuthCRUD = void 0;
 const checkAuthCRUD = async (req, res, next) => {
+    console.log('req session: ', req.session);
     if (req.session.user) {
         if (req.session.user.position_id === 0) {
             next();
