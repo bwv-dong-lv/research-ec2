@@ -449,21 +449,6 @@ export const updateUser = async (
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
 
-  if (req.session.user?.id) {
-    const loginUser = await userRepository.getUserById(
-      Number(req.session.user.id),
-    );
-    if (loginUser?.position_id !== 0) {
-      req.session.destroy(function() {});
-      res.redirect('/login');
-      return;
-    }
-  }
-
-  const groupList = await groupRepository.getAllGroup();
-
-  const userUpdate = await userRepository.getUserById(Number(req.body.userId));
-
   if (req.session.user?.id == req.body.userId) {
     const user: Partial<User> = {
       password: req.body.password
@@ -503,8 +488,24 @@ export const updateUser = async (
 
       req.session.flashMessage = messages.EBT093();
       res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      return;
     }
   }
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
+  const groupList = await groupRepository.getAllGroup();
+
+  const userUpdate = await userRepository.getUserById(Number(req.body.userId));
 
   if (userUpdate) {
     if (await isSelfEmail(req.body.email, userUpdate?.email)) {

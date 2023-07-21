@@ -348,17 +348,7 @@ const updateUser = async (req, res, next) => {
     }
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
-    if ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) {
-        const loginUser = await userRepository.getUserById(Number(req.session.user.id));
-        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
-            req.session.destroy(function () { });
-            res.redirect('/login');
-            return;
-        }
-    }
-    const groupList = await groupRepository.getAllGroup();
-    const userUpdate = await userRepository.getUserById(Number(req.body.userId));
-    if (((_b = req.session.user) === null || _b === void 0 ? void 0 : _b.id) == req.body.userId) {
+    if (((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) == req.body.userId) {
         const user = {
             password: req.body.password
                 ? await (0, bcrypt_1.hashPassword)(req.body.password)
@@ -393,8 +383,19 @@ const updateUser = async (req, res, next) => {
             };
             req.session.flashMessage = constants_1.messages.EBT093();
             res.redirect(`/user/crud/${Number(req.body.userId)}`);
+            return;
         }
     }
+    if ((_b = req.session.user) === null || _b === void 0 ? void 0 : _b.id) {
+        const loginUser = await userRepository.getUserById(Number(req.session.user.id));
+        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
+            req.session.destroy(function () { });
+            res.redirect('/login');
+            return;
+        }
+    }
+    const groupList = await groupRepository.getAllGroup();
+    const userUpdate = await userRepository.getUserById(Number(req.body.userId));
     if (userUpdate) {
         if (await (0, exports.isSelfEmail)(req.body.email, userUpdate === null || userUpdate === void 0 ? void 0 : userUpdate.email)) {
             // update giu nguyen email
