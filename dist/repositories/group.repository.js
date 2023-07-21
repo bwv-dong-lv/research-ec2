@@ -31,7 +31,14 @@ let GroupRepository = class GroupRepository extends typeorm_1.Repository {
             return await this.findOne({ where: { id: groupId, deleted_date: (0, typeorm_1.IsNull)() } });
         };
         this.getAllGroup = async () => {
-            const groups = await this.find({ deleted_date: (0, typeorm_1.IsNull)() });
+            const groups = await this.find({
+                where: {
+                    deleted_date: (0, typeorm_1.IsNull)(),
+                },
+                order: {
+                    name: 'ASC',
+                },
+            });
             return groups;
         };
         this.getAllGroupNull = async () => {
