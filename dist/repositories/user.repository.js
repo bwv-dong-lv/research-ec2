@@ -23,6 +23,14 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             });
             return this.save(Object.assign(Object.assign({}, property), user));
         };
+        this.checkUserExist = async (userId) => {
+            return await this.findOne({
+                where: {
+                    id: userId,
+                    deleted_date: (0, typeorm_1.IsNull)(),
+                },
+            });
+        };
         // deleteUserById = async (userId: number, adminId: number, date: Date) => {
         //   return await this.update(userId, {
         //     del_flg: 1,

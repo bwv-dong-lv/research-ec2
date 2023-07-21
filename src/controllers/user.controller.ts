@@ -442,6 +442,48 @@ export const updateUser = async (
 
   const userUpdate = await userRepository.getUserById(Number(req.body.userId));
 
+  if (req.session.user?.id == req.body.userId) {
+    const user: Partial<User> = {
+      password: req.body.password
+        ? await hashPassword(req.body.password)
+        : undefined,
+    };
+    try {
+      await userRepository.updateUser(Number(req.body.userId), user);
+
+      req.session.updateUserInfo = {};
+
+      req.session.updateUserInfo = {
+        id: req.body.id,
+        email: req.body.email,
+        name: req.body.username,
+        password: '',
+        started_date: req.body.startedDate,
+        groupId: req.body.group,
+        positionId: req.body.position,
+      };
+
+      req.session.flashMessage = messages.EBT096();
+      res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      return;
+    } catch (error) {
+      req.session.updateUserInfo = {};
+
+      req.session.updateUserInfo = {
+        id: req.body.id,
+        email: req.body.email,
+        name: req.body.username,
+        password: req.body.password,
+        started_date: req.body.startedDate,
+        groupId: req.body.group,
+        positionId: req.body.position,
+      };
+
+      req.session.flashMessage = messages.EBT093();
+      res.redirect(`/user/crud/${Number(req.body.userId)}`);
+    }
+  }
+
   if (userUpdate) {
     if (await isSelfEmail(req.body.email, userUpdate?.email)) {
       // update giu nguyen email
