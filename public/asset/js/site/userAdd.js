@@ -35,7 +35,7 @@ $.validator.addMethod(
   'customEmail',
   function(value, element) {
     // Regular expression pattern for email format with dot in the head and two dots allowed
-    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
+    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
     return this.optional(element) || pattern.test(value);
   },
   'Please enter a valid email address.',
