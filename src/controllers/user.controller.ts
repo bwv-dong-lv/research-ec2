@@ -353,6 +353,17 @@ export const addUser = async (
 
   const userRepository = getCustomRepository(UserRepository);
 
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
   if (await userRepository.getUserByEmail(req.body.email)) {
     // error email address is registed
     req.session.addUserInfo = {};
@@ -437,6 +448,17 @@ export const updateUser = async (
 
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
 
   const groupList = await groupRepository.getAllGroup();
 
@@ -627,6 +649,17 @@ export const deleteUser = async (
   const groupRepository = getCustomRepository(GroupRepository);
 
   const groupList = await groupRepository.getAllGroup();
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(
+      Number(req.session.user.id),
+    );
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
 
   try {
     await userRepository.deleteUserById(Number(req.body.userId), new Date());
