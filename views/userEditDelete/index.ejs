@@ -16,7 +16,10 @@
           <div class="d-flex justify-content-between">
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-center mr-5">
               <input style="display: none;" name="userId" value="<%= userInfo.id || "" %>" />
-              <label class="font-weight-bold h5" for="fromDate"><%= userInfo.id || "" %></label>
+              <label for="toDate"><%= userInfo.id ? "ID" : "" %></label>
+              <div class="d-flex flex-column">
+                <input style="width: 10rem;" id="user-add-id" class="form-control" name="username" disabled type="text" value="<%= userInfo.id || ""  %>">
+              </div>
             </div>
 
             <div style="width: 18.5rem;" class="d-flex justify-content-between align-items-start">
