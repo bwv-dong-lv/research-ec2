@@ -18,6 +18,7 @@ declare module 'express-session' {
     userListCSV: any;
     flashMessage: string;
     flashMessageCSV: any;
+    flashMessageInfo: any;
     addUserInfo: any;
     updateUserInfo: any;
     groupPage: any;

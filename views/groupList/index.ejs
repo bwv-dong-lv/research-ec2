@@ -8,6 +8,10 @@
     <%- include('../common/message_error') %>
     <% } %>
 
+    <% if (flashMessageInfo) { %>
+    <%- include('../common/message_info') %>
+    <% } %>
+
     <%- include('../common/message_mutiple_error') %>
 
   </div>

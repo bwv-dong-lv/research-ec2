@@ -34,6 +34,7 @@ export const renderGroupList = async (
   req.session.groupPage = '';
   req.session.flashMessage = '';
   req.session.flashMessageCSV = '';
+  req.session.flashMessageInfo = '';
 
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
@@ -109,6 +110,7 @@ export const renderGroupList = async (
     next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
     flashMessage: tempSession.flashMessage || '',
     flashMessageCSV: tempSession.flashMessageCSV || '',
+    flashMessageInfo: tempSession.flashMessageInfo || '',
   });
 };
 
@@ -254,7 +256,7 @@ export const importCSV = async (
             }
           }
         } else {
-          req.session.flashMessage = messages.EBT095();
+          req.session.flashMessageInfo = messages.EBT092();
           res.redirect('/group');
           return;
         }
@@ -324,6 +326,7 @@ export const importCSV = async (
               },
             );
 
+            req.session.flashMessageInfo = messages.EBT092();
             res.redirect('/group');
           } catch (error) {
             console.log('error: ', error);
