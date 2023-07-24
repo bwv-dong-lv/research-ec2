@@ -45,7 +45,7 @@ export const renderGroupList = async (
   const abc = [];
 
   for (let i = 0; i < groupListData.data.length; i++) {
-    const leader = await userRepository.getUserById(
+    const leader = await userRepository.getExistUserById(
       Number(groupListData.data[i].group_leader_id),
     );
 

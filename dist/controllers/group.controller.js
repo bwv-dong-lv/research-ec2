@@ -31,7 +31,7 @@ const renderGroupList = async (req, res, next) => {
     const groupListData = await groupRepository.getGroups(tempSession.groupPage || 1);
     const abc = [];
     for (let i = 0; i < groupListData.data.length; i++) {
-        const leader = await userRepository.getUserById(Number(groupListData.data[i].group_leader_id));
+        const leader = await userRepository.getExistUserById(Number(groupListData.data[i].group_leader_id));
         abc.push(Object.assign(Object.assign({}, groupListData.data[i]), { group_leader_name: (leader === null || leader === void 0 ? void 0 : leader.name) || '', created_date_display: (0, moment_1.default)(groupListData.data[i].created_date)
                 .add(1, 'day')
                 .format('DD/MM/YYYY'), updated_date_display: (0, moment_1.default)(groupListData.data[i].updated_date)
