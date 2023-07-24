@@ -217,6 +217,7 @@ export const importCSV = async (
     let headerCSV: any = [];
 
     const groupRepository = getCustomRepository(GroupRepository);
+    const userRepository = getCustomRepository(UserRepository);
 
     const filePath = path.join(__dirname, '../../', req.file.path);
 
@@ -257,6 +258,21 @@ export const importCSV = async (
               if (!existGroup) {
                 errorTextArr.push(
                   messages.messageCSV(i, messages.EBT094(row['ID'].toString())),
+                );
+              }
+            }
+
+            if (row['Group Leader'] && isNumeric(row['Group Leader'])) {
+              const existGroup = await userRepository.checkUserExist(
+                Number(row['Group Leader']),
+              );
+
+              if (!existGroup) {
+                errorTextArr.push(
+                  messages.messageCSV(
+                    i,
+                    messages.EBT094(row['Group Leader'].toString()),
+                  ),
                 );
               }
             }

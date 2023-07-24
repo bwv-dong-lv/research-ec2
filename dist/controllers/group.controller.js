@@ -145,6 +145,7 @@ const importCSV = async (req, res, next) => {
         const results = [];
         let headerCSV = [];
         const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+        const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
         const filePath = path_1.default.join(__dirname, '../../', req.file.path);
         fs_1.default.createReadStream(filePath)
             .pipe((0, csv_parser_1.default)())
@@ -172,6 +173,12 @@ const importCSV = async (req, res, next) => {
                         const existGroup = await groupRepository.getGroupById(Number(row['ID']));
                         if (!existGroup) {
                             errorTextArr.push(constants_1.messages.messageCSV(i, constants_1.messages.EBT094(row['ID'].toString())));
+                        }
+                    }
+                    if (row['Group Leader'] && (0, exports.isNumeric)(row['Group Leader'])) {
+                        const existGroup = await userRepository.checkUserExist(Number(row['Group Leader']));
+                        if (!existGroup) {
+                            errorTextArr.push(constants_1.messages.messageCSV(i, constants_1.messages.EBT094(row['Group Leader'].toString())));
                         }
                     }
                 }
