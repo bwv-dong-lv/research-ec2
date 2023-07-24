@@ -158,6 +158,11 @@ const importCSV = async (req, res, next) => {
             fs_1.default.unlinkSync(req.file.path);
             const errorTextArr = [];
             if (await (0, exports.checkHeaderCSV)(headerCSV)) {
+                if (results.length === 0) {
+                    req.session.flashMessage = constants_1.messages.EBT095();
+                    res.redirect('/group');
+                    return;
+                }
                 for (let i = 0; i < results.length; i++) {
                     const row = results[i];
                     (0, exports.checkRequiredCSV)(errorTextArr, row, i);

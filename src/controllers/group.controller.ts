@@ -234,6 +234,12 @@ export const importCSV = async (
         const errorTextArr: string[] = [];
 
         if (await checkHeaderCSV(headerCSV)) {
+          if (results.length === 0) {
+            req.session.flashMessage = messages.EBT095();
+            res.redirect('/group');
+            return;
+          }
+
           for (let i = 0; i < results.length; i++) {
             const row = results[i];
 
