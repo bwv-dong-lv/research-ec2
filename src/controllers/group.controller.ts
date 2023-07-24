@@ -5,7 +5,7 @@ import {IsNull} from 'typeorm';
  * User controller
  */
 import {Request, Response, NextFunction} from 'express';
-
+import Decimal from 'decimal.js';
 import _ from 'lodash';
 import fs from 'fs';
 
@@ -201,6 +201,47 @@ export const checkMaxLengthCSV = async (
       ),
     );
   }
+
+  if (row['ID'] && Number(row['ID']).toString().length > 19) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002('ID', 19, Number(row['ID']).toString().length),
+      ),
+    );
+  }
+
+  if (
+    row['Group Leader'] &&
+    Number(row['Group Leader']).toString().length > 19
+  ) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002(
+          'Group Leader',
+          19,
+          Number(row['Group Leader']).toString().length,
+        ),
+      ),
+    );
+  }
+
+  if (
+    row['Floor Number'] &&
+    Number(row['Floor Number']).toString().length > 9
+  ) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002(
+          'Floor Number',
+          9,
+          Number(row['Floor Number']).toString().length,
+        ),
+      ),
+    );
+  }
 };
 
 export const importCSV = async (
@@ -250,7 +291,15 @@ export const importCSV = async (
 
             checkMaxLengthCSV(errorTextArr, row, i);
 
-            if (row['ID'] && isNumeric(row['ID'])) {
+            // const scientificNotation = row['Group Leader'];
+            // const fullNumber = new Decimal(scientificNotation);
+            // console.log(fullNumber.toString());
+
+            if (
+              row['ID'] &&
+              isNumeric(row['ID']) &&
+              Number(row['ID']).toString().length <= 19
+            ) {
               const existGroup = await groupRepository.getGroupById(
                 Number(row['ID']),
               );
@@ -262,7 +311,11 @@ export const importCSV = async (
               }
             }
 
-            if (row['Group Leader'] && isNumeric(row['Group Leader'])) {
+            if (
+              row['Group Leader'] &&
+              isNumeric(row['Group Leader']) &&
+              Number(row['Group Leader']).toString().length <= 19
+            ) {
               const existGroup = await userRepository.checkUserExist(
                 Number(row['Group Leader']),
               );
@@ -278,7 +331,7 @@ export const importCSV = async (
             }
           }
         } else {
-          req.session.flashMessageInfo = messages.EBT092();
+          req.session.flashMessage = messages.EBT095();
           res.redirect('/group');
           return;
         }
