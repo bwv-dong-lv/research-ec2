@@ -5,7 +5,7 @@ import {IsNull} from 'typeorm';
  * User controller
  */
 import {Request, Response, NextFunction} from 'express';
-
+import Decimal from 'decimal.js';
 import _ from 'lodash';
 import fs from 'fs';
 
@@ -34,6 +34,7 @@ export const renderGroupList = async (
   req.session.groupPage = '';
   req.session.flashMessage = '';
   req.session.flashMessageCSV = '';
+  req.session.flashMessageInfo = '';
 
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
@@ -45,7 +46,7 @@ export const renderGroupList = async (
   const abc = [];
 
   for (let i = 0; i < groupListData.data.length; i++) {
-    const leader = await userRepository.getUserById(
+    const leader = await userRepository.getExistUserById(
       Number(groupListData.data[i].group_leader_id),
     );
 
@@ -109,6 +110,7 @@ export const renderGroupList = async (
     next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
     flashMessage: tempSession.flashMessage || '',
     flashMessageCSV: tempSession.flashMessageCSV || '',
+    flashMessageInfo: tempSession.flashMessageInfo || '',
   });
 };
 
@@ -199,6 +201,47 @@ export const checkMaxLengthCSV = async (
       ),
     );
   }
+
+  if (row['ID'] && Number(row['ID']).toString().length > 19) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002('ID', 19, Number(row['ID']).toString().length),
+      ),
+    );
+  }
+
+  if (
+    row['Group Leader'] &&
+    Number(row['Group Leader']).toString().length > 19
+  ) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002(
+          'Group Leader',
+          19,
+          Number(row['Group Leader']).toString().length,
+        ),
+      ),
+    );
+  }
+
+  if (
+    row['Floor Number'] &&
+    Number(row['Floor Number']).toString().length > 9
+  ) {
+    errorTextArr.push(
+      messages.messageCSV(
+        rowNumber,
+        messages.EBT002(
+          'Floor Number',
+          9,
+          Number(row['Floor Number']).toString().length,
+        ),
+      ),
+    );
+  }
 };
 
 export const importCSV = async (
@@ -215,6 +258,7 @@ export const importCSV = async (
     let headerCSV: any = [];
 
     const groupRepository = getCustomRepository(GroupRepository);
+    const userRepository = getCustomRepository(UserRepository);
 
     const filePath = path.join(__dirname, '../../', req.file.path);
 
@@ -232,6 +276,12 @@ export const importCSV = async (
         const errorTextArr: string[] = [];
 
         if (await checkHeaderCSV(headerCSV)) {
+          if (results.length === 0) {
+            req.session.flashMessage = messages.EBT095();
+            res.redirect('/group');
+            return;
+          }
+
           for (let i = 0; i < results.length; i++) {
             const row = results[i];
 
@@ -241,7 +291,15 @@ export const importCSV = async (
 
             checkMaxLengthCSV(errorTextArr, row, i);
 
-            if (row['ID'] && isNumeric(row['ID'])) {
+            // const scientificNotation = row['Group Leader'];
+            // const fullNumber = new Decimal(scientificNotation);
+            // console.log(fullNumber.toString());
+
+            if (
+              row['ID'] &&
+              isNumeric(row['ID']) &&
+              Number(row['ID']).toString().length <= 19
+            ) {
               const existGroup = await groupRepository.getGroupById(
                 Number(row['ID']),
               );
@@ -249,6 +307,25 @@ export const importCSV = async (
               if (!existGroup) {
                 errorTextArr.push(
                   messages.messageCSV(i, messages.EBT094(row['ID'].toString())),
+                );
+              }
+            }
+
+            if (
+              row['Group Leader'] &&
+              isNumeric(row['Group Leader']) &&
+              Number(row['Group Leader']).toString().length <= 19
+            ) {
+              const existGroup = await userRepository.checkUserExist(
+                Number(row['Group Leader']),
+              );
+
+              if (!existGroup) {
+                errorTextArr.push(
+                  messages.messageCSV(
+                    i,
+                    messages.EBT094(row['Group Leader'].toString()),
+                  ),
                 );
               }
             }
@@ -324,6 +401,7 @@ export const importCSV = async (
               },
             );
 
+            req.session.flashMessageInfo = messages.EBT092();
             res.redirect('/group');
           } catch (error) {
             console.log('error: ', error);

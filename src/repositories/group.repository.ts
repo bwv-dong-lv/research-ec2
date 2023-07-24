@@ -2,6 +2,7 @@
 import {EntityRepository, IsNull, Repository} from 'typeorm';
 import user from '../middlewares/user';
 import {Group} from '../entities/group.entity';
+import Decimal from 'decimal.js';
 
 @EntityRepository(Group)
 export class GroupRepository extends Repository<Group> {

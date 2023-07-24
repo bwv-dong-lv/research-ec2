@@ -26,12 +26,13 @@ const renderGroupList = async (req, res, next) => {
     req.session.groupPage = '';
     req.session.flashMessage = '';
     req.session.flashMessageCSV = '';
+    req.session.flashMessageInfo = '';
     const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
     const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
     const groupListData = await groupRepository.getGroups(tempSession.groupPage || 1);
     const abc = [];
     for (let i = 0; i < groupListData.data.length; i++) {
-        const leader = await userRepository.getUserById(Number(groupListData.data[i].group_leader_id));
+        const leader = await userRepository.getExistUserById(Number(groupListData.data[i].group_leader_id));
         abc.push(Object.assign(Object.assign({}, groupListData.data[i]), { group_leader_name: (leader === null || leader === void 0 ? void 0 : leader.name) || '', created_date_display: (0, moment_1.default)(groupListData.data[i].created_date)
                 .add(1, 'day')
                 .format('DD/MM/YYYY'), updated_date_display: (0, moment_1.default)(groupListData.data[i].updated_date)
@@ -77,6 +78,7 @@ const renderGroupList = async (req, res, next) => {
         next3dots: pageArray.at(-1) < (fullPageArray.at(-1) || 5),
         flashMessage: tempSession.flashMessage || '',
         flashMessageCSV: tempSession.flashMessageCSV || '',
+        flashMessageInfo: tempSession.flashMessageInfo || '',
     });
 };
 exports.renderGroupList = renderGroupList;
@@ -133,6 +135,17 @@ const checkMaxLengthCSV = async (errorTextArr, row, rowNumber) => {
     if (row['Group Name'] && row['Group Name'].length > 255) {
         errorTextArr.push(constants_1.messages.messageCSV(rowNumber, constants_1.messages.EBT002('Group Name', 255, row['Group Name'].length)));
     }
+    if (row['ID'] && Number(row['ID']).toString().length > 19) {
+        errorTextArr.push(constants_1.messages.messageCSV(rowNumber, constants_1.messages.EBT002('ID', 19, Number(row['ID']).toString().length)));
+    }
+    if (row['Group Leader'] &&
+        Number(row['Group Leader']).toString().length > 19) {
+        errorTextArr.push(constants_1.messages.messageCSV(rowNumber, constants_1.messages.EBT002('Group Leader', 19, Number(row['Group Leader']).toString().length)));
+    }
+    if (row['Floor Number'] &&
+        Number(row['Floor Number']).toString().length > 9) {
+        errorTextArr.push(constants_1.messages.messageCSV(rowNumber, constants_1.messages.EBT002('Floor Number', 9, Number(row['Floor Number']).toString().length)));
+    }
 };
 exports.checkMaxLengthCSV = checkMaxLengthCSV;
 const importCSV = async (req, res, next) => {
@@ -143,6 +156,7 @@ const importCSV = async (req, res, next) => {
         const results = [];
         let headerCSV = [];
         const groupRepository = (0, typeorm_1.getCustomRepository)(group_repository_1.GroupRepository);
+        const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
         const filePath = path_1.default.join(__dirname, '../../', req.file.path);
         fs_1.default.createReadStream(filePath)
             .pipe((0, csv_parser_1.default)())
@@ -156,15 +170,33 @@ const importCSV = async (req, res, next) => {
             fs_1.default.unlinkSync(req.file.path);
             const errorTextArr = [];
             if (await (0, exports.checkHeaderCSV)(headerCSV)) {
+                if (results.length === 0) {
+                    req.session.flashMessage = constants_1.messages.EBT095();
+                    res.redirect('/group');
+                    return;
+                }
                 for (let i = 0; i < results.length; i++) {
                     const row = results[i];
                     (0, exports.checkRequiredCSV)(errorTextArr, row, i);
                     (0, exports.checkFormatCSV)(errorTextArr, row, i);
                     (0, exports.checkMaxLengthCSV)(errorTextArr, row, i);
-                    if (row['ID'] && (0, exports.isNumeric)(row['ID'])) {
+                    // const scientificNotation = row['Group Leader'];
+                    // const fullNumber = new Decimal(scientificNotation);
+                    // console.log(fullNumber.toString());
+                    if (row['ID'] &&
+                        (0, exports.isNumeric)(row['ID']) &&
+                        Number(row['ID']).toString().length <= 19) {
                         const existGroup = await groupRepository.getGroupById(Number(row['ID']));
                         if (!existGroup) {
                             errorTextArr.push(constants_1.messages.messageCSV(i, constants_1.messages.EBT094(row['ID'].toString())));
+                        }
+                    }
+                    if (row['Group Leader'] &&
+                        (0, exports.isNumeric)(row['Group Leader']) &&
+                        Number(row['Group Leader']).toString().length <= 19) {
+                        const existGroup = await userRepository.checkUserExist(Number(row['Group Leader']));
+                        if (!existGroup) {
+                            errorTextArr.push(constants_1.messages.messageCSV(i, constants_1.messages.EBT094(row['Group Leader'].toString())));
                         }
                     }
                 }
@@ -226,6 +258,7 @@ const importCSV = async (req, res, next) => {
                             }
                         }
                     });
+                    req.session.flashMessageInfo = constants_1.messages.EBT092();
                     res.redirect('/group');
                 }
                 catch (error) {

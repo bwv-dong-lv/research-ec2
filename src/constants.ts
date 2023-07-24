@@ -79,6 +79,7 @@ export const messages = {
     `${fieldName} format is not correct. Please enter ${format} only.`,
   EBT017: () => `入力した情報のいずれかの情報が間違っています。`,
   EBT019: () => `すでにメールアドレスは登録されています。`,
+  EBT092: () => `インポートできました。`,
   EBT093: () => `登録・更新・削除処理に失敗しました。`,
   EBT094: (fieldName: string) => `${fieldName}が存在しておりません。`,
   EBT095: () => `インポートファイルの中身が正しくありません。`,

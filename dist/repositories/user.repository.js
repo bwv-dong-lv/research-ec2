@@ -56,6 +56,9 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         this.getUserById = async (userId) => {
             return await this.findOne({ id: userId });
         };
+        this.getExistUserById = async (userId) => {
+            return await this.findOne({ id: userId, deleted_date: (0, typeorm_1.IsNull)() });
+        };
         this.getAllUsers = async (username, fromDate, toDate) => {
             const whereClause = {
                 name: (0, typeorm_1.Like)(`%${username ? username : ''}%`),

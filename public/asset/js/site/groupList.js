@@ -62,3 +62,7 @@ function importCSV() {
   });
   fileInput.click();
 }
+
+$('#close-flash-message-info').click(function() {
+  $('#flash-message-info').addClass('d-none');
+});

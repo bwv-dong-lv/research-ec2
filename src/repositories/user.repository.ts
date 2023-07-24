@@ -71,6 +71,10 @@ export class UserRepository extends Repository<User> {
     return await this.findOne({id: userId});
   };
 
+  getExistUserById = async (userId: number) => {
+    return await this.findOne({id: userId, deleted_date: IsNull()});
+  };
+
   getAllUsers = async (username: string, fromDate: Date, toDate: Date) => {
     const whereClause: any = {
       name: Like(`%${username ? username : ''}%`),
