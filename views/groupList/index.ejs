@@ -25,8 +25,8 @@
         <% if(totalRow > 10){ %>
         <div style="width: 100%;" class="mt-4">
           <div class="d-flex justify-content-center">
-            <button id="first-page" class="bg-light rounded-left border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">最初</button>
-            <button id="prev-page" class="bg-light border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">前へ</button>
+            <button id="first-page" class="bg-light rounded-left border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="firstPageClick()">??</button>
+            <button id="prev-page" class="bg-light border <%= currentPage != 1 && "border-secondary"  %>" <%= currentPage == 1 && "disabled"  %> onclick="prevClick()" type="submit">??</button>
 
             <% if(prev3dots){ %>
             <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
@@ -40,12 +40,14 @@
             <input style="color: #212529; background-color: #f8f9fa; border-color: #f8f9fa; border: 1px solid transparent;" class="" disabled value="..." type="submit" />
             <% } %>
 
-            <button id="next-page" class="bg-light border <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">次へ</button>
-            <button id="last-page" class="bg-light border rounded-right <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">最終</button>
+            <button id="next-page" class="bg-light border <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="nextClick()" type="submit">??</button>
+            <button id="last-page" class="bg-light border rounded-right <%= currentPage != pageArray.at(-1) && "border-secondary"  %>" <%= currentPage == pageArray.at(-1) && "disabled"  %> onclick="lastPageClick()">??</button>
           </div>
         </div>
+        <% } %>
+
+      </div>
     </form>
-    <% } %>
 
   </div>
 
@@ -106,7 +108,6 @@
     <button style="width: 10rem;" id="import-btn" class="rounded btn btn-primary" onclick="importCSV()">Import CSV</button>
     <p id="error-csv" class="text-danger mt-2"></p>
   </div>
-</div>
 </div>
 
 <script src="/public/asset/js/site/groupList.js"></script>
