@@ -47,7 +47,10 @@ export const login = async (
     const {email, password} = req.body;
 
     const user = await userRepository.getUserByEmail(req.body.email);
-    const users: any = await userRepository.getUsersByEmail(req.body.email);
+    const users: any = await userRepository.getUsersNotNullByEmail(
+      req.body.email,
+    );
+    // const users: any = await userRepository.getUsersByEmail(req.body.email);
 
     if (
       users.length === 1 &&
