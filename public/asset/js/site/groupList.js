@@ -42,14 +42,24 @@ function importCSV() {
       .toLowerCase();
 
     if (!validExtension.includes(fileExtension)) {
-      $('#error-csv').html(
-        'ファイル形式が誤っています。CSVを選択してください。',
-      );
+      $('#error-container').html('');
+      $('#error-max-file').html(`
+<div id="flash-message" class="alert alert-danger alert-dismissible">
+  <button style="padding: 0.45rem 0.45rem;" id="close-flash-message" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  'ファイル形式が誤っています。CSVを選択してください。
+</div>
+        `);
     } else {
       const maxSize = 2 * 1024 * 1024;
 
       if ((await file.size) > maxSize) {
-        $('#error-csv').html('ファイルのサイズ制限2 MBを超えています。');
+        $('#error-container').html('');
+        $('#error-max-file').html(`
+<div id="flash-message" class="alert alert-danger alert-dismissible">
+  <button style="padding: 0.45rem 0.45rem;" id="close-flash-message" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  ファイルのサイズ制限2 MBを超えています。
+</div>
+        `);
       } else {
         // csv file oke
         const tempInput = document.getElementById('csv-file');

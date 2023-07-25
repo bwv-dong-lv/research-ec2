@@ -11,7 +11,7 @@
           <% if(loginUser) { %>
           <div class="d-flex align-items-center">
             <a style="padding: 7px; color: #4D5F71; font-size: 1.2rem;" id="navbarDropdownUser" class="d-inline-block mr-2 font-weight-bold" data-toggle="dropdown">
-              <%= loginUser.name %>
+              <%= loginUser.name.length > 50 ? loginUser.name.slice(0,50) + '...' : loginUser.name %>
             </a>
 
             <a href="/logout" type="button" class="button btn-logout" style="color: #BF474D;">Logout</a>

@@ -10,9 +10,7 @@ export const checkExist = async (
   if (req.session.user) {
     const userRepository = getCustomRepository(UserRepository);
 
-    const user = await userRepository.checkUserExist(
-      Number(req.session.user.id),
-    );
+    const user = await userRepository.checkUserExist(req.session.user.id);
 
     if (user) {
       next();

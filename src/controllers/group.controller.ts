@@ -47,7 +47,7 @@ export const renderGroupList = async (
 
   for (let i = 0; i < groupListData.data.length; i++) {
     const leader = await userRepository.getExistUserById(
-      Number(groupListData.data[i].group_leader_id),
+      groupListData.data[i].group_leader_id,
     );
 
     abc.push({
@@ -202,43 +202,29 @@ export const checkMaxLengthCSV = async (
     );
   }
 
-  if (row['ID'] && Number(row['ID']).toString().length > 19) {
+  if (row['ID'] && row['ID'].length > 19) {
     errorTextArr.push(
       messages.messageCSV(
         rowNumber,
-        messages.EBT002('ID', 19, Number(row['ID']).toString().length),
+        messages.EBT002('ID', 19, row['ID'].length),
       ),
     );
   }
 
-  if (
-    row['Group Leader'] &&
-    Number(row['Group Leader']).toString().length > 19
-  ) {
+  if (row['Group Leader'] && row['Group Leader'].length > 19) {
     errorTextArr.push(
       messages.messageCSV(
         rowNumber,
-        messages.EBT002(
-          'Group Leader',
-          19,
-          Number(row['Group Leader']).toString().length,
-        ),
+        messages.EBT002('Group Leader', 19, row['Group Leader'].length),
       ),
     );
   }
 
-  if (
-    row['Floor Number'] &&
-    Number(row['Floor Number']).toString().length > 9
-  ) {
+  if (row['Floor Number'] && row['Floor Number'].length > 9) {
     errorTextArr.push(
       messages.messageCSV(
         rowNumber,
-        messages.EBT002(
-          'Floor Number',
-          9,
-          Number(row['Floor Number']).toString().length,
-        ),
+        messages.EBT002('Floor Number', 9, row['Floor Number'].length),
       ),
     );
   }
@@ -249,6 +235,17 @@ export const importCSV = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const userRepository = getCustomRepository(UserRepository);
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(req.session.user.id);
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
   try {
     if (!req.file) {
       console.log('missing file');
@@ -291,18 +288,12 @@ export const importCSV = async (
 
             checkMaxLengthCSV(errorTextArr, row, i);
 
-            // const scientificNotation = row['Group Leader'];
-            // const fullNumber = new Decimal(scientificNotation);
-            // console.log(fullNumber.toString());
-
             if (
               row['ID'] &&
               isNumeric(row['ID']) &&
               Number(row['ID']).toString().length <= 19
             ) {
-              const existGroup = await groupRepository.getGroupById(
-                Number(row['ID']),
-              );
+              const existGroup = await groupRepository.getGroupById(row['ID']);
 
               if (!existGroup) {
                 errorTextArr.push(
@@ -317,7 +308,7 @@ export const importCSV = async (
               Number(row['Group Leader']).toString().length <= 19
             ) {
               const existGroup = await userRepository.checkUserExist(
-                Number(row['Group Leader']),
+                row['Group Leader'],
               );
 
               if (!existGroup) {
