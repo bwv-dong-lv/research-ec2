@@ -1,19 +1,24 @@
 <div>
   <div class="">
-    <% if (flashMessage.includes('成功')) { %>
-    <%- include('../common/message_success') %>
-    <% } %>
+    <div id="error-container">
+      <% if (flashMessage.includes('??')) { %>
+      <%- include('../common/message_success') %>
+      <% } %>
 
-    <% if (!flashMessage.includes('成功')) { %>
-    <%- include('../common/message_error') %>
-    <% } %>
+      <% if (!flashMessage.includes('??')) { %>
+      <%- include('../common/message_error') %>
+      <% } %>
 
-    <% if (flashMessageInfo) { %>
-    <%- include('../common/message_info') %>
-    <% } %>
+      <% if (flashMessageInfo) { %>
+      <%- include('../common/message_info') %>
+      <% } %>
 
-    <%- include('../common/message_mutiple_error') %>
+      <%- include('../common/message_mutiple_error') %>
+    </div>
 
+    <div id="error-max-file">
+
+    </div>
   </div>
 
   <div class="">
