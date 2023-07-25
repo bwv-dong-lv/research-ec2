@@ -54,3 +54,21 @@ document.getElementById('login-form').addEventListener('submit', function() {
     document.getElementById('submit-login').disabled = true;
   }
 });
+
+$('#user-add-email').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-email');
+});
+
+$('#login-email').on('blur', function() {
+  $('#login-form')
+    .validate()
+    .element('#login-email');
+});
+
+$('#login-password').on('blur', function() {
+  $('#login-form')
+    .validate()
+    .element('#login-password');
+});
