@@ -1,18 +1,8 @@
-// $.validator.addMethod(
-//   'customEmail',
-//   function(value, element) {
-//     // Regular expression pattern for email format with dot in the head and two dots allowed
-//     const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)+$/;
-//     return this.optional(element) || pattern.test(value);
-//   },
-//   'Please enter a valid email address.',
-// );
-
 $.validator.addMethod(
   'customEmail',
   function(value, element) {
     // Regular expression pattern for email format with dot in the head and two dots allowed
-    const pattern = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
+    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return this.optional(element) || pattern.test(value);
   },
   'Please enter a valid email address.',
@@ -63,4 +53,22 @@ document.getElementById('login-form').addEventListener('submit', function() {
   if ($('#login-form').valid()) {
     document.getElementById('submit-login').disabled = true;
   }
+});
+
+$('#user-add-email').on('blur', function() {
+  $('#user-add-form')
+    .validate()
+    .element('#user-add-email');
+});
+
+$('#login-email').on('blur', function() {
+  $('#login-form')
+    .validate()
+    .element('#login-email');
+});
+
+$('#login-password').on('blur', function() {
+  $('#login-form')
+    .validate()
+    .element('#login-password');
 });

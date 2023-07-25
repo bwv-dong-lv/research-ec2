@@ -218,6 +218,23 @@ const renderUserAddEditDelete = async (req, res, next) => {
     // update user
     if (req.params.userId) {
         const userInfo = await userRepository.getUserById(req.params.userId);
+        if (userInfo.deleted_date) {
+            res.status(404);
+            // respond with html page
+            if (req.accepts('html')) {
+                res.render('errors/index', {
+                    layout: 'layout/notFoundLayout',
+                    title: '404 Page Not Found',
+                    content: '',
+                });
+                return;
+            }
+            if (req.accepts('json')) {
+                res.json({ error: 'Not found' });
+                return;
+            }
+            res.type('txt').send('Not found');
+        }
         if (userInfo) {
             const group = await groupRepository.getGroupById(userInfo.group_id);
             userInfo.started_date = (0, moment_1.default)(userInfo.started_date)
