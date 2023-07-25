@@ -9,7 +9,7 @@ export const checkAuthCRUD = async (
     if (req.session.user.position_id === 0) {
       next();
     } else {
-      if (req.session.user.id == Number(req.params.userId)) {
+      if (String(req.session.user.id) == String(req.params.userId)) {
         next();
       } else {
         // eslint-disable-next-line @typescript-eslint/no-empty-function

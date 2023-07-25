@@ -67,7 +67,7 @@ export class UserRepository extends Repository<User> {
     });
   };
 
-  getUserById = async (userId: number) => {
+  getUserById = async (userId: any) => {
     return await this.findOne({id: userId});
   };
 

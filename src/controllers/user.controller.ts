@@ -289,9 +289,7 @@ export const renderUserAddEditDelete = async (
 
   // update user
   if (req.params.userId) {
-    const userInfo: any = await userRepository.getUserById(
-      Number(req.params.userId),
-    );
+    const userInfo: any = await userRepository.getUserById(req.params.userId);
 
     if (userInfo) {
       const group = await groupRepository.getGroupById(userInfo.group_id);
@@ -354,9 +352,7 @@ export const addUser = async (
   const userRepository = getCustomRepository(UserRepository);
 
   if (req.session.user?.id) {
-    const loginUser = await userRepository.getUserById(
-      Number(req.session.user.id),
-    );
+    const loginUser = await userRepository.getUserById(req.session.user.id);
     if (loginUser?.position_id !== 0) {
       req.session.destroy(function() {});
       res.redirect('/login');
@@ -386,7 +382,7 @@ export const addUser = async (
       email: req.body.email,
       password: await hashPassword(req.body.password),
       name: req.body.username,
-      group_id: Number(req.body.group),
+      group_id: req.body.group,
       // started_date: new Date(req.body.startedDate),
       started_date: stringToDate(req.body.startedDate),
       position_id: req.body.position,
@@ -449,14 +445,17 @@ export const updateUser = async (
   const userRepository = getCustomRepository(UserRepository);
   const groupRepository = getCustomRepository(GroupRepository);
 
-  if (req.session.user?.id == req.body.userId) {
+  if (
+    req.session.user?.position_id != 0 &&
+    req.session.user?.id == req.body.userId
+  ) {
     const user: Partial<User> = {
       password: req.body.password
         ? await hashPassword(req.body.password)
         : undefined,
     };
     try {
-      await userRepository.updateUser(Number(req.body.userId), user);
+      await userRepository.updateUser(req.body.userId, user);
 
       req.session.updateUserInfo = {};
 
@@ -487,15 +486,13 @@ export const updateUser = async (
       };
 
       req.session.flashMessage = messages.EBT093();
-      res.redirect(`/user/crud/${Number(req.body.userId)}`);
+      res.redirect(`/user/crud/${req.body.userId}`);
       return;
     }
   }
 
   if (req.session.user?.id) {
-    const loginUser = await userRepository.getUserById(
-      Number(req.session.user.id),
-    );
+    const loginUser = await userRepository.getUserById(req.session.user.id);
     if (loginUser?.position_id !== 0) {
       req.session.destroy(function() {});
       res.redirect('/login');
@@ -505,7 +502,7 @@ export const updateUser = async (
 
   const groupList = await groupRepository.getAllGroup();
 
-  const userUpdate = await userRepository.getUserById(Number(req.body.userId));
+  const userUpdate = await userRepository.getUserById(req.body.userId);
 
   if (userUpdate) {
     if (await isSelfEmail(req.body.email, userUpdate?.email)) {
@@ -523,13 +520,13 @@ export const updateUser = async (
           ? await hashPassword(req.body.password)
           : undefined,
         name: req.body.username,
-        group_id: Number(req.body.group),
+        group_id: req.body.group,
         started_date: new Date(mysqlDate),
-        position_id: Number(req.body.position),
+        position_id: req.body.position,
         updated_date: new Date(),
       };
       try {
-        await userRepository.updateUser(Number(req.body.userId), user);
+        await userRepository.updateUser(req.body.userId, user);
 
         req.session.updateUserInfo = {};
 
@@ -544,7 +541,7 @@ export const updateUser = async (
         };
 
         req.session.flashMessage = messages.EBT096();
-        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        res.redirect(`/user/crud/${req.body.userId}`);
       } catch (error) {
         req.session.updateUserInfo = {};
 
@@ -559,7 +556,7 @@ export const updateUser = async (
         };
 
         req.session.flashMessage = messages.EBT093();
-        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        res.redirect(`/user/crud/${req.body.userId}`);
       }
     } else {
       // update user with email
@@ -579,13 +576,13 @@ export const updateUser = async (
             ? await hashPassword(req.body.password)
             : undefined,
           name: req.body.username,
-          group_id: Number(req.body.group),
+          group_id: req.body.group,
           started_date: new Date(mysqlDate),
-          position_id: Number(req.body.position),
+          position_id: req.body.position,
           updated_date: new Date(),
         };
         try {
-          await userRepository.updateUser(Number(req.body.userId), user);
+          await userRepository.updateUser(req.body.userId, user);
 
           req.session.updateUserInfo = {};
 
@@ -600,7 +597,7 @@ export const updateUser = async (
           };
 
           req.session.flashMessage = messages.EBT096();
-          res.redirect(`/user/crud/${Number(req.body.userId)}`);
+          res.redirect(`/user/crud/${req.body.userId}`);
         } catch (error) {
           req.session.updateUserInfo = {};
 
@@ -615,7 +612,7 @@ export const updateUser = async (
           };
 
           req.session.flashMessage = messages.EBT093();
-          res.redirect(`/user/crud/${Number(req.body.userId)}`);
+          res.redirect(`/user/crud/${req.body.userId}`);
         }
       } else {
         req.session.updateUserInfo = {};
@@ -631,7 +628,7 @@ export const updateUser = async (
         };
 
         req.session.flashMessage = messages.EBT019();
-        res.redirect(`/user/crud/${Number(req.body.userId)}`);
+        res.redirect(`/user/crud/${req.body.userId}`);
       }
     }
   }
@@ -652,9 +649,7 @@ export const deleteUser = async (
   const groupList = await groupRepository.getAllGroup();
 
   if (req.session.user?.id) {
-    const loginUser = await userRepository.getUserById(
-      Number(req.session.user.id),
-    );
+    const loginUser = await userRepository.getUserById(req.session.user.id);
     if (loginUser?.position_id !== 0) {
       req.session.destroy(function() {});
       res.redirect('/login');
@@ -663,7 +658,7 @@ export const deleteUser = async (
   }
 
   try {
-    await userRepository.deleteUserById(Number(req.body.userId), new Date());
+    await userRepository.deleteUserById(req.body.userId, new Date());
 
     // res.render('userList/index', {
     //   layout: 'layout/defaultLayout',
@@ -698,6 +693,6 @@ export const deleteUser = async (
     };
 
     req.session.flashMessage = messages.EBT093();
-    res.redirect(`/user/crud/${Number(req.body.userId)}`);
+    res.redirect(`/user/crud/${req.body.userId}`);
   }
 };
