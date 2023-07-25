@@ -7,7 +7,7 @@ const checkAuthCRUD = async (req, res, next) => {
             next();
         }
         else {
-            if (req.session.user.id == Number(req.params.userId)) {
+            if (String(req.session.user.id) == String(req.params.userId)) {
                 next();
             }
             else {

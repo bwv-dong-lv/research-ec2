@@ -235,6 +235,17 @@ export const importCSV = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const userRepository = getCustomRepository(UserRepository);
+
+  if (req.session.user?.id) {
+    const loginUser = await userRepository.getUserById(req.session.user.id);
+    if (loginUser?.position_id !== 0) {
+      req.session.destroy(function() {});
+      res.redirect('/login');
+      return;
+    }
+  }
+
   try {
     if (!req.file) {
       console.log('missing file');

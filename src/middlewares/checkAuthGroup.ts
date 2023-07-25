@@ -1,4 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
+import {UserRepository} from '../repositories/user.repository';
+import {getCustomRepository} from 'typeorm';
 
 export const checkAuthGroup = async (
   req: Request,
@@ -6,7 +8,11 @@ export const checkAuthGroup = async (
   next: NextFunction,
 ) => {
   if (req.session.user) {
-    if (req.session.user.position_id === 0) {
+    const userRepository = getCustomRepository(UserRepository);
+
+    const user = await userRepository.checkUserExist(req.session.user.id);
+
+    if (user?.position_id === 0) {
       next();
     } else {
       // eslint-disable-next-line @typescript-eslint/no-empty-function

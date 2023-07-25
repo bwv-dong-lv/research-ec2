@@ -147,6 +147,16 @@ const checkMaxLengthCSV = async (errorTextArr, row, rowNumber) => {
 };
 exports.checkMaxLengthCSV = checkMaxLengthCSV;
 const importCSV = async (req, res, next) => {
+    var _a;
+    const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
+    if ((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id) {
+        const loginUser = await userRepository.getUserById(req.session.user.id);
+        if ((loginUser === null || loginUser === void 0 ? void 0 : loginUser.position_id) !== 0) {
+            req.session.destroy(function () { });
+            res.redirect('/login');
+            return;
+        }
+    }
     try {
         if (!req.file) {
             console.log('missing file');
