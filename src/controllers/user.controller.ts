@@ -291,6 +291,27 @@ export const renderUserAddEditDelete = async (
   if (req.params.userId) {
     const userInfo: any = await userRepository.getUserById(req.params.userId);
 
+    if (userInfo.deleted_date) {
+      res.status(404);
+
+      // respond with html page
+      if (req.accepts('html')) {
+        res.render('errors/index', {
+          layout: 'layout/notFoundLayout',
+          title: '404 Page Not Found',
+          content: '',
+        });
+        return;
+      }
+
+      if (req.accepts('json')) {
+        res.json({error: 'Not found'});
+        return;
+      }
+
+      res.type('txt').send('Not found');
+    }
+
     if (userInfo) {
       const group = await groupRepository.getGroupById(userInfo.group_id);
 
