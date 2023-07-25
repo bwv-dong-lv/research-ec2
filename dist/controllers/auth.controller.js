@@ -31,7 +31,8 @@ const login = async (req, res, next) => {
         const userRepository = (0, typeorm_1.getCustomRepository)(user_repository_1.UserRepository);
         const { email, password } = req.body;
         const user = await userRepository.getUserByEmail(req.body.email);
-        const users = await userRepository.getUsersByEmail(req.body.email);
+        const users = await userRepository.getUsersNotNullByEmail(req.body.email);
+        // const users: any = await userRepository.getUsersByEmail(req.body.email);
         if (users.length === 1 &&
             user &&
             (await (0, bcrypt_1.comparePassword)(req.body.password, user.password))) {

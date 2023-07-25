@@ -66,6 +66,14 @@ export class UserRepository extends Repository<User> {
       },
     });
   };
+  getUsersNotNullByEmail = async (userEmail: string) => {
+    return await this.find({
+      where: {
+        email: userEmail,
+        deleted_date: IsNull(),
+      },
+    });
+  };
 
   getUserById = async (userId: any) => {
     return await this.findOne({id: userId});

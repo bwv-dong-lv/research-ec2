@@ -53,6 +53,14 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
                 },
             });
         };
+        this.getUsersNotNullByEmail = async (userEmail) => {
+            return await this.find({
+                where: {
+                    email: userEmail,
+                    deleted_date: (0, typeorm_1.IsNull)(),
+                },
+            });
+        };
         this.getUserById = async (userId) => {
             return await this.findOne({ id: userId });
         };
