@@ -85,5 +85,5 @@ export const messages = {
   EBT095: () => `インポートファイルの中身が正しくありません。`,
   EBT096: () => `登録・更新・削除処理に成功しました。`,
   messageCSV: (rowNumber: number, errorText: string) =>
-    `Dòng: ${rowNumber + 1}${errorText}`,
+    `Dòng ${rowNumber + 1}: ${errorText}`,
 };
