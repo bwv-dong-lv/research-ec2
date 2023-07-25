@@ -65,6 +65,6 @@ exports.messages = {
     EBT094: (fieldName) => `${fieldName}が存在しておりません。`,
     EBT095: () => `インポートファイルの中身が正しくありません。`,
     EBT096: () => `登録・更新・削除処理に成功しました。`,
-    messageCSV: (rowNumber, errorText) => `Dòng: ${rowNumber + 1}${errorText}`,
+    messageCSV: (rowNumber, errorText) => `Dòng ${rowNumber + 1}: ${errorText}`,
 };
 //# sourceMappingURL=constants.js.map
