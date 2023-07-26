@@ -371,6 +371,7 @@ const updateUser = async (req, res, next) => {
             password: req.body.password
                 ? await (0, bcrypt_1.hashPassword)(req.body.password)
                 : undefined,
+            updated_date: new Date(),
         };
         try {
             await userRepository.updateUser(req.body.userId, user);
