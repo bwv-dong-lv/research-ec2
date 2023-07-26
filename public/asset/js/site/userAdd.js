@@ -14,7 +14,8 @@ $('#user-add-started-date').datepicker({
 $.validator.addMethod(
   'passwordPattern',
   function(value) {
-    return /^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value);
+    // return /^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value);
+    return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(value);
   },
   'パスワードには半角数字のみ、または半角英字のみの値は使用できません。',
 );
