@@ -46,7 +46,7 @@ function importCSV() {
       $('#error-max-file').html(`
 <div id="flash-message" class="alert alert-danger alert-dismissible">
   <button style="padding: 0.45rem 0.45rem;" id="close-flash-message" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  'ファイル形式が誤っています。CSVを選択してください。
+  ファイル形式が誤っています。CSVを選択してください。
 </div>
         `);
     } else {
