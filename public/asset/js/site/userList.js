@@ -85,6 +85,22 @@ $.validator.addMethod(
   'dateLessThan',
   function(value, element, params) {
     const fromField = $(params);
+
+    const parts = fromField.val().split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    const date = new Date(year, month - 1, day);
+
+    if (
+      date.getDate() !== day ||
+      date.getMonth() !== month - 1 ||
+      date.getFullYear() !== year
+    ) {
+      return true; // Valid
+    }
+
     if (!this.optional(element) && !this.optional(fromField[0])) {
       const fromDate = toDateObject(fromField.val());
       const toDate = toDateObject(value);
@@ -99,6 +115,22 @@ $.validator.addMethod(
   'dateMoreThan',
   function(value, element, params) {
     const fromField = $(params);
+
+    const parts = fromField.val().split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    const date = new Date(year, month - 1, day);
+
+    if (
+      date.getDate() !== day ||
+      date.getMonth() !== month - 1 ||
+      date.getFullYear() !== year
+    ) {
+      return true; // Valid
+    }
+
     if (!this.optional(element) && !this.optional(fromField[0])) {
       const fromDate = toDateObject(fromField.val());
       const toDate = toDateObject(value);
@@ -140,12 +172,12 @@ $(document).ready(function() {
   $('#user-list-search-form').validate({
     rules: {
       fromDate: {
-        dateLessThan: '#user-list-to-date',
         validDay: true,
+        dateLessThan: '#user-list-to-date',
       },
       toDate: {
-        dateMoreThan: '#user-list-from-date',
         validDay: true,
+        dateMoreThan: '#user-list-from-date',
       },
     },
     messages: {
