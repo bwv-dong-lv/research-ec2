@@ -474,6 +474,7 @@ export const updateUser = async (
       password: req.body.password
         ? await hashPassword(req.body.password)
         : undefined,
+      updated_date: new Date(),
     };
     try {
       await userRepository.updateUser(req.body.userId, user);

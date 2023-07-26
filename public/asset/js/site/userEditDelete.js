@@ -20,6 +20,11 @@ $('#user-update-started-date').on('keyup blur', function() {
   $('#user-add-form').validate();
 });
 
+$('#user-add-confirm-password').on('keyup blur', function() {
+  $(this).valid();
+  $('#user-add-form').validate();
+});
+
 // check password
 $.validator.addMethod(
   'passwordPattern',
@@ -27,7 +32,8 @@ $.validator.addMethod(
     if (value.trim() === '') {
       return true;
     }
-    return /^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value);
+    // return /^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value);
+    return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(value);
   },
   'パスワードには半角数字のみ、または半角英字のみの値は使用できません。',
 );
