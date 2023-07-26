@@ -20,6 +20,11 @@ $('#user-update-started-date').on('keyup blur', function() {
   $('#user-add-form').validate();
 });
 
+$('#user-add-confirm-password').on('keyup blur', function() {
+  $(this).valid();
+  $('#user-add-form').validate();
+});
+
 // check password
 $.validator.addMethod(
   'passwordPattern',
