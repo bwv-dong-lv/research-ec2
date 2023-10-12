@@ -197,10 +197,11 @@ export const exportCSV = async (
     const groupList = await groupRepository.getAllGroup();
 
     const userListCSVData = await userRepository.getAllUsers(
-      req.session.search.username,
-      req.session.search.fromDate &&
-        convertDateFormat(req.session.search.fromDate),
-      req.session.search.toDate && convertDateFormat(req.session.search.toDate),
+      req.session.searchInfo.username,
+      req.session.searchInfo.fromDate &&
+        convertDateFormat(req.session.searchInfo.fromDate),
+      req.session.searchInfo.toDate &&
+        convertDateFormat(req.session.searchInfo.toDate),
     );
 
     const positionNameArr = ['Director', 'Group Leader', 'Leader', 'Member'];
